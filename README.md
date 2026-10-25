@@ -56,7 +56,8 @@ Machine and the fine-tuned Habermas Machine in the paper:
  chain-of-thought to generate the candidate statements and preferences.
 
 2. The prompted version of the Habermas Machine currently uses AI Studio with a
- Gemini backend. However, other LLM backends can be used and added to
+ Gemini backend, or OpenAI models via `types.LLMCLient.OPENAI` (requires the
+ `OPENAI_API_KEY` environment variable). Other LLM backends can be used and added to
  `habermas_machine/llm_client/`.
 
 3. The reward model used in the prompted version of the Habermas Machine is

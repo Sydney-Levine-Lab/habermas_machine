@@ -20,6 +20,7 @@ import enum
 from habermas_machine.llm_client import aistudio_client
 from habermas_machine.llm_client import base_client
 from habermas_machine.llm_client import mock_client
+from habermas_machine.llm_client import openai_client
 from habermas_machine.reward_model import base_model
 from habermas_machine.reward_model import cot_ranking_model
 from habermas_machine.reward_model import length_based_model
@@ -42,6 +43,7 @@ class LLMCLient(enum.Enum):
   """LLM client."""
   AISTUDIO = 'aistudio'
   MOCK = 'mock'
+  OPENAI = 'openai'
 
   def get_client(self, model: str) -> base_client.LLMClient:
     if self is self.MOCK:
@@ -49,6 +51,8 @@ class LLMCLient(enum.Enum):
       return mock_client.MockClient()
     elif self is self.AISTUDIO:
       return aistudio_client.AIStudioClient(model_name=model)
+    elif self is self.OPENAI:
+      return openai_client.OpenAIClient(model_name=model)
     else:
       raise ValueError('Unknown LLM client was specified.')
 
