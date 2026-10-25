@@ -36,15 +36,17 @@ def _generate_opinion_critique_prompt(
 ) -> str:
   """Generates a prompt using opinions, previous winner, and critiques."""
 
-  prompt = f"""You are assisting a citizens' jury in forming a consensus opinion on an important question. The jury members have provided their individual opinions, a first draft of a consensus statement was created, and critiques of that draft were gathered. Your role is to generate {num_statements} revised consensus statements that incorporate the feedback and aim to better represent the collective view of the jury. The jury will choose between the statements, so they should be genuinely different options that differ significantly from each other. All statements must be consistent on the points where the jury members agree. Where the jury members disagree, the statements should take different positions. If there is little disagreement, the statements should instead vary on other factors that plausibly matter for the question, but which the jury members did not mention explicitly.
+  prompt = f"""You are helping a group of people at Edge City reach a shared decision about something that will happen in the village. Edge City is a gathering on the coast of Goa where people come to do their best work of the year together. Mornings start with exercise or time in nature. Afternoons are for coworking at The Circle, a hub that faces the beach. Evenings have fireside talks, workshops, demo days, and dinners that people organize themselves. Small groups also run programs throughout the event on topics such as AI, crypto, longevity, governance, and consciousness.
+
+Each person in the group shared their opinion, someone wrote a first draft of a consensus statement, and group members then critiqued that draft. Your job is to generate {num_statements} revised consensus statements that use this feedback to better reflect what the group wants. The group will choose one of these statements, so make them real alternatives that differ clearly from each other. Every statement must match the points that all group members agree on. Where members disagree, the statements should take different sides. If members mostly agree, the statements should instead differ on other things that matter for the decision but that no one mentioned.
 
 Please think through this task step-by-step:
 
-1. Carefully analyze the individual opinions, noting key themes, points of agreement, and areas of disagreement.
-2. Review the previous draft consensus statement and identify its strengths and weaknesses.
-3. Analyze the critiques of the previous draft, paying attention to specific suggestions and concerns raised by the jury members, and to any new points of agreement or disagreement.
-4. Identify the dimensions on which the revised statements should differ: the areas of disagreement or, if there is little disagreement, other factors that plausibly matter for the question but were not mentioned explicitly.
-5. Based on the opinions, the previous draft, and the critiques, write {num_statements} revised consensus statements. Each statement should be clear, concise, address the core issue posed in the question, and reflect all the points of agreement. The statements should differ significantly from each other on the dimensions identified in step 4. Refer to specific opinion and critique numbers in your reasoning, but not in the statements themselves.
+1. Read the individual opinions carefully. Note the main themes, where people agree, and where they disagree.
+2. Review the previous draft consensus statement. Note what it does well and what it misses.
+3. Read the critiques of the previous draft. Note the specific suggestions and concerns that group members raised, and any new points of agreement or disagreement.
+4. Decide how the revised statements should differ from each other: on the points of disagreement or, if members mostly agree, on other things that matter for the decision but that no one mentioned.
+5. Using the opinions, the previous draft, and the critiques, write {num_statements} revised consensus statements. Each statement should be clear and short, answer the question, and include every point of agreement. The statements should differ clearly from each other in the ways you chose in step 4. Refer to opinion and critique numbers in your reasoning, but not in the statements themselves.
 
 Provide your answer in the following format, with exactly {num_statements} statements separated by <sep>:
 <answer>
@@ -61,21 +63,21 @@ Provide your answer in the following format, with exactly {num_statements} state
 
 Example (with 3 statements):
 <answer>
-1. Opinions generally agree on the need for more green spaces (Opinions 1, 2, 3), but disagree on the specific location (Opinions 2 and 3 prefer the riverfront) and funding (Opinion 1 suggests a tax levy, Opinion 3 suggests private donations).
-2. The previous draft suggested converting the old factory site into a park, but didn't address funding, which was a key concern in Critique 1.
-3. Critiques highlighted the lack of funding details (Critique 1) and some preferred a different location (Critique 2 suggested the riverfront, echoing Opinion 2). All critiques accept that a new park should be created.
-4. The revised statements should differ on location (factory site or riverfront) and funding (tax levy, private donations, or a combination).
-5. Statement 1 keeps the factory site and funds it through a tax levy (Opinion 1, Critique 1). Statement 2 moves the park to the riverfront and funds it through private donations (Opinions 2 and 3, Critique 2). Statement 3 keeps the factory site as a lower-cost compromise and combines city funds with private donations (Opinions 1 and 3, Critique 1).
+1. Everyone wants a weekly community dinner (Opinions 1, 2, 3). People disagree on where to hold it (Opinions 2 and 3 prefer the beach, Opinion 1 prefers The Circle) and on how to handle food (Opinion 1 wants to hire a caterer, Opinion 3 wants a potluck).
+2. The previous draft put the dinner at The Circle but didn't say how to handle food, which was the main concern in Critique 1.
+3. Critique 1 asked for details on food, and Critique 2 suggested the beach, as Opinion 2 did. All critiques accept a weekly dinner.
+4. The revised statements should differ on location (The Circle or the beach) and food (caterer, potluck, or a mix).
+5. Statement 1 keeps The Circle and hires a caterer (Opinion 1, Critique 1). Statement 2 moves the dinner to the beach and makes it a potluck (Opinions 2 and 3, Critique 2). Statement 3 keeps The Circle because it is easier to set up and works when it rains, and combines a caterer with dishes that people bring (Opinions 1 and 3, Critique 1).
 <sep>
-We propose converting the old factory site into a park, funded by a dedicated tax levy so that funding is reliable and shared fairly by all residents.
+We will hold a weekly community dinner at The Circle and hire a caterer, paid for with a small fee from each person, so no one has to cook.
 <sep>
-We propose creating a new park along the riverfront, funded by private donations so that no additional taxes are needed.
+We will hold a weekly community dinner on the beach as a potluck, so it costs nothing and people share food they made themselves.
 <sep>
-We propose converting the old factory site into a park, as it avoids the higher costs of riverfront development, funded by a combination of city funds and private donations.
+We will hold a weekly community dinner at The Circle, since it is easier to set up and works when it rains. A caterer will provide the main dishes, and people can bring sides to share.
 </answer>
 
 
-Below you will find the question, the individual opinions, the previous draft consensus statement, and the critiques provided by the jury members.
+Below you will find the question, the individual opinions, the previous draft consensus statement, and the critiques from the group members.
 
 
 Question: {question}
@@ -104,13 +106,15 @@ def _generate_opinion_only_prompt(
 ) -> str:
   """Generates a prompt for the LLM using only the opinions."""
   prompt = f"""
-You are assisting a citizens' jury in forming an initial consensus opinion on an important question. The jury members have provided their individual opinions. Your role is to generate {num_statements} draft consensus statements that capture the main points of agreement. The jury will choose between the statements, so they should be genuinely different options that differ significantly from each other. All statements must be consistent on the points where the jury members agree. Where the jury members disagree, the statements should take different positions. If there is little disagreement, the statements should instead vary on other factors that plausibly matter for the question, but which the jury members did not mention explicitly.
+You are helping a group of people at Edge City reach a shared decision about something that will happen in the village. Edge City is a gathering on the coast of Goa where people come to do their best work of the year together. Mornings start with exercise or time in nature. Afternoons are for coworking at The Circle, a hub that faces the beach. Evenings have fireside talks, workshops, demo days, and dinners that people organize themselves. Small groups also run programs throughout the event on topics such as AI, crypto, longevity, governance, and consciousness.
+
+Each person in the group shared their opinion. Your job is to generate {num_statements} draft consensus statements that capture what they agree on. The group will choose one of these statements, so make them real alternatives that differ clearly from each other. Every statement must match the points that all group members agree on. Where members disagree, the statements should take different sides. If members mostly agree, the statements should instead differ on other things that matter for the decision but that no one mentioned.
 
 Please think through this task step-by-step:
 
-1. Carefully analyze the individual opinions, noting key themes, points of agreement, and areas of disagreement.
-2. Identify the dimensions on which the statements should differ: the areas of disagreement or, if there is little disagreement, other factors that plausibly matter for the question but were not mentioned explicitly.
-3. Based on the analysis, write {num_statements} concise and clear draft consensus statements. Each statement should address the core issue posed in the question and reflect all the points of agreement. The statements should differ significantly from each other on the dimensions identified in step 2. Refer to specific opinion numbers in your reasoning, but not in the statements themselves.
+1. Read the individual opinions carefully. Note the main themes, where people agree, and where they disagree.
+2. Decide how the statements should differ from each other: on the points of disagreement or, if members mostly agree, on other things that matter for the decision but that no one mentioned.
+3. Using your analysis, write {num_statements} clear and short draft consensus statements. Each statement should answer the question and include every point of agreement. The statements should differ clearly from each other in the ways you chose in step 2. Refer to opinion numbers in your reasoning, but not in the statements themselves.
 
 Provide your answer in the following format, with exactly {num_statements} statements separated by <sep>:
 <answer>
@@ -127,19 +131,19 @@ Provide your answer in the following format, with exactly {num_statements} state
 
 Example (with 3 statements):
 <answer>
-1. All opinions emphasize the importance of public transportation (Opinions 1, 2, 3, 4) and reducing car dependency (Opinions 2, 4). There is little disagreement.
-2. Since there is little disagreement, the statements should differ on factors the opinions did not mention: whether to prioritize buses or rail, and how to pay for the investment.
-3. Statement 1 prioritizes frequent bus services funded by a congestion charge, which also reduces car dependency (Opinions 2, 4). Statement 2 prioritizes expanding the rail network funded through general taxation. Statement 3 prioritizes making public transport free at the point of use to encourage people to switch from cars (Opinion 4).
+1. Everyone wants a final demo day where anyone can present (Opinions 1, 2, 3, 4), and several people want the demos kept short (Opinions 2, 4). Members mostly agree.
+2. Since members mostly agree, the statements should differ on things the opinions did not mention: when to hold the demo day and what format to use.
+3. Statement 1 holds short demos on one evening at The Circle, followed by a shared dinner. Statement 2 spreads short demos over two afternoons so more people can present without rushing (Opinion 4). Statement 3 replaces stage talks with short demos at tables around The Circle that people walk between (Opinion 2).
 <sep>
-We believe that investing in public transport is crucial, starting with more frequent bus services, funded by a congestion charge that also discourages unnecessary car journeys.
+We will hold a final demo day where anyone can present, with five-minute demos on one evening at The Circle, followed by a shared dinner.
 <sep>
-We believe that investing in public transport is crucial, with a focus on expanding the rail network, funded through general taxation as a long-term investment in the city.
+We will hold a final demo day where anyone can present, with short demos spread over two afternoons so more people can show their work without rushing.
 <sep>
-We believe that investing in public transport is crucial, and that it should be made free at the point of use so that as many people as possible choose it over the car.
+We will hold a final demo day where anyone can present. Instead of talks on a stage, presenters will give short demos at tables around The Circle, and people will walk between them.
 </answer>
 
 
-Below you will find the question and the individual opinions of the jury members.
+Below you will find the question and the individual opinions of the group members.
 
 Question: {question}
 

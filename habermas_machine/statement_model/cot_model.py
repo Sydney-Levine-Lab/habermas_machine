@@ -31,14 +31,16 @@ def _generate_opinion_critique_prompt(
 ) -> str:
   """Generates a prompt using opinions, previous winner, and critiques."""
 
-  prompt = f"""You are assisting a citizens' jury in forming a consensus opinion on an important question. The jury members have provided their individual opinions, a first draft of a consensus statement was created, and critiques of that draft were gathered. Your role is to generate a revised consensus statement that incorporates the feedback and aims to better represent the collective view of the jury.  Ensure the revised statement does not conflict with the individual opinions.
+  prompt = f"""You are helping a group of people at Edge City reach a shared decision about something that will happen in the village. Edge City is a gathering on the coast of Goa where people come to do their best work of the year together. Mornings start with exercise or time in nature. Afternoons are for coworking at The Circle, a hub that faces the beach. Evenings have fireside talks, workshops, demo days, and dinners that people organize themselves. Small groups also run programs throughout the event on topics such as AI, crypto, longevity, governance, and consciousness.
+
+Each person in the group shared their opinion, someone wrote a first draft of a consensus statement, and group members then critiqued that draft. Your job is to write a revised consensus statement that uses this feedback to better reflect what the group wants. Make sure the revised statement does not conflict with any of the individual opinions.
 
 Please think through this task step-by-step:
 
-1. Carefully analyze the individual opinions, noting key themes, points of agreement, and areas of disagreement.
-2. Review the previous draft consensus statement and identify its strengths and weaknesses.
-3. Analyze the critiques of the previous draft, paying attention to specific suggestions and concerns raised by the jury members.
-4. Based on the opinions, the previous draft, and the critiques, synthesize a revised consensus statement that addresses the concerns raised and better reflects the collective view of the jury. Ensure the statement is clear, concise, addresses the core issue posed in the question, and *does not conflict* with any of the individual opinions.  Refer to specific opinion and critique numbers when making your revisions.
+1. Read the individual opinions carefully. Note the main themes, where people agree, and where they disagree.
+2. Review the previous draft consensus statement. Note what it does well and what it misses.
+3. Read the critiques of the previous draft. Note the specific suggestions and concerns that group members raised.
+4. Using the opinions, the previous draft, and the critiques, write a revised consensus statement that responds to these concerns and better reflects what the group wants. The statement should be clear and short, answer the question, and *not conflict* with any of the individual opinions. Refer to opinion and critique numbers when you explain your changes.
 
 Provide your answer in the following format:
 <answer>
@@ -49,16 +51,16 @@ Provide your answer in the following format:
 
 Example:
 <answer>
-1. Opinions generally agree on the need for more green spaces (Opinions 1, 2, 3), but disagree on the specific location (Opinions 2 and 3 prefer the riverfront) and funding (Opinion 1 suggests a tax levy, Opinion 3 suggests private donations).
-2. The previous draft suggested converting the old factory site into a park, but didn't address funding, which was a key concern in Critique 1.
-3. Critiques highlighted the lack of funding details (Critique 1) and some preferred a different location (Critique 2 suggested the riverfront, echoing Opinion 2).
-4. The revised statement proposes converting the old factory site into a park, funded by a combination of city funds and private donations (addressing Opinion 3 and Critique 1), and includes a plan for community input on park design and amenities. The factory site is chosen as a compromise location, as it avoids the higher costs associated with the riverfront development suggested in Opinion 2 and Critique 2.
+1. Everyone wants a weekly community dinner (Opinions 1, 2, 3). People disagree on where to hold it (Opinions 2 and 3 prefer the beach, Opinion 1 prefers The Circle) and on how to handle food (Opinion 1 wants to hire a caterer, Opinion 3 wants a potluck).
+2. The previous draft put the dinner at The Circle but didn't say how to handle food, which was the main concern in Critique 1.
+3. Critique 1 asked for details on food, and Critique 2 suggested the beach, as Opinion 2 did.
+4. The revised statement keeps the dinner at The Circle and combines a caterer for the main dishes with sides that people bring (Opinions 1 and 3, Critique 1). It adds a beach dinner once a month for those who prefer the beach (Opinion 2, Critique 2). The Circle stays the main location because it is easier to set up and works when it rains.
 <sep>
-We propose converting the old factory site into a park, funded by a combination of city funds and private donations. We will actively seek community input on the park's design and amenities to ensure it meets the needs of our residents.
+We will hold a weekly community dinner at The Circle, since it is easier to set up and works when it rains. A caterer will provide the main dishes, and people can bring sides to share. Once a month, we will move the dinner to the beach.
 </answer>
 
 
-Below you will find the question, the individual opinions, the previous draft consensus statement, and the critiques provided by the jury members.
+Below you will find the question, the individual opinions, the previous draft consensus statement, and the critiques from the group members.
 
 
 Question: {question}
@@ -86,12 +88,14 @@ def _generate_opinion_only_prompt(
 ) -> str:
   """Generates a prompt for the LLM using only the opinions."""
   prompt = f"""
-You are assisting a citizens' jury in forming an initial consensus opinion on an important question. The jury members have provided their individual opinions. Your role is to generate a draft consensus statement that captures the main points of agreement and represents the collective view of the jury.  The draft statement must not conflict with any of the individual opinions.
+You are helping a group of people at Edge City reach a shared decision about something that will happen in the village. Edge City is a gathering on the coast of Goa where people come to do their best work of the year together. Mornings start with exercise or time in nature. Afternoons are for coworking at The Circle, a hub that faces the beach. Evenings have fireside talks, workshops, demo days, and dinners that people organize themselves. Small groups also run programs throughout the event on topics such as AI, crypto, longevity, governance, and consciousness.
+
+Each person in the group shared their opinion. Your job is to write a draft consensus statement that captures what they agree on and reflects what the group as a whole wants. The draft statement must not conflict with any of the individual opinions.
 
 Please think through this task step-by-step:
 
-1. Carefully analyze the individual opinions, noting key themes, points of agreement, and areas of disagreement.
-2. Based on the analysis, synthesize a concise and clear consensus statement that represents the shared perspective of the jury members.  Address the core issue posed in the question, and ensure the statement *does not conflict* with any of the individual opinions.  Refer to specific opinion numbers to demonstrate how the draft reflects the collective view.
+1. Read the individual opinions carefully. Note the main themes, where people agree, and where they disagree.
+2. Using your analysis, write a clear and short consensus statement that reflects the views the group members share. The statement should answer the question and *not conflict* with any of the individual opinions. Refer to opinion numbers to show how the draft reflects the group's views.
 
 Provide your answer in the following format:
 <answer>
@@ -102,14 +106,14 @@ Provide your answer in the following format:
 
 Example:
 <answer>
-1. Most opinions emphasize the importance of public transportation (Opinions 1, 3, 4) and reducing car dependency (Opinions 2, 4). Some also mention cycling and walking as important additions (Opinions 2, 3).
-2. The draft statement prioritizes investment in public transport and encourages cycling and walking, reflecting the shared views expressed in the majority of opinions.
+1. Most opinions want a final demo day where anyone can present (Opinions 1, 3, 4) and want the demos kept short (Opinions 2, 4). Some also want time afterward to talk with presenters (Opinions 2, 3).
+2. The draft statement calls for a demo day open to everyone, with short demos and time afterward to talk, which reflects the views that most opinions share.
 <sep>
-We believe that investing in public transport, along with promoting cycling and walking, are crucial steps towards creating a more sustainable and livable city.
+We will hold a final demo day where anyone can present. Demos will be short, and we will leave time afterward for people to talk with presenters about their work.
 </answer>
 
 
-Below you will find the question and the individual opinions of the jury members.
+Below you will find the question and the individual opinions of the group members.
 
 Question: {question}
 
