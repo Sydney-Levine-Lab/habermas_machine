@@ -62,3 +62,45 @@ class BaseStatementModel(abc.ABC):
         - The explanation (e.g. chain-of-thought)
     """
     raise NotImplementedError('generate_statement method is not implemented.')
+
+  def generate_statements(
+      self,
+      llm_client: base_client.LLMClient,
+      question: str,
+      opinions: Sequence[str],
+      num_statements: int,
+      previous_winner: str | None = None,
+      critiques: Sequence[str] | None = None,
+      seed: int | None = None,
+      num_retries_on_error: int = 1,
+  ) -> list[StatementResult]:
+    """Generates up to num_statements statements in one go.
+
+    The default implementation generates a single statement. Callers should
+    call this repeatedly until they have as many statements as they need.
+
+    Args:
+      llm_client: The LLM client used to generate the statements.
+      question: Question that the citizens are responding to.
+      opinions: Text-based opinions of the citizens.
+      num_statements: Maximum number of statements to generate.
+      previous_winner: The statement that won the previous round.
+      critiques: Critiques of the previous winner.
+      seed: Optional seed for the sampling. If None a random seed will be used.
+      num_retries_on_error: Number of retries when it hits an error.
+
+    Returns:
+      A list of at least one and at most num_statements StatementResults.
+    """
+    del num_statements
+    return [
+        self.generate_statement(
+            llm_client=llm_client,
+            question=question,
+            opinions=opinions,
+            previous_winner=previous_winner,
+            critiques=critiques,
+            seed=seed,
+            num_retries_on_error=num_retries_on_error,
+        )
+    ]

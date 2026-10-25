@@ -31,6 +31,7 @@ from habermas_machine.social_choice import schulze_method
 from habermas_machine.social_choice import utils as sc_utils
 from habermas_machine.statement_model import base_model as statement_base_model
 from habermas_machine.statement_model import cot_model
+from habermas_machine.statement_model import diverse_cot_model
 from habermas_machine.statement_model import mock_statement_model
 
 
@@ -80,12 +81,15 @@ class StatementModel(enum.Enum):
   """Statement model."""
   MOCK = 'mock'
   CHAIN_OF_THOUGHT = 'chain_of_thought'
+  DIVERSE_CHAIN_OF_THOUGHT = 'diverse_chain_of_thought'
 
   def get_model(self) -> statement_base_model.BaseStatementModel:
     if self is self.MOCK:
       return mock_statement_model.MockStatementModel()
     elif self is self.CHAIN_OF_THOUGHT:
       return cot_model.COTModel()
+    elif self is self.DIVERSE_CHAIN_OF_THOUGHT:
+      return diverse_cot_model.DiverseCOTModel()
     else:
       raise ValueError('Unknown statement model was specified.')
 

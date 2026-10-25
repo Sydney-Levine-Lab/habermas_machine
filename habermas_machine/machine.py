@@ -101,25 +101,27 @@ class HabermasMachine:
     """Generates candidate statements."""
     statements = []
     explanations = []
-    for _ in range(self._num_candidates):
+    while len(statements) < self._num_candidates:
       # Shuffle the opinions and critiques to avoid ordering bias.
       indices = self._rng.permutation(self._num_citizens)
       shuffled_opinions = [self._opinions[j] for j in indices]
       shuffled_critiques = (
           [self._critiques[-1][i] for i in indices] if self._critiques else None
       )
-      statement, explanation = self._statement_model.generate_statement(
+      results = self._statement_model.generate_statements(
           llm_client=self._statement_client,
           question=self._question,
           opinions=shuffled_opinions,
+          num_statements=self._num_candidates - len(statements),
           previous_winner=(
               self._previous_winners[-1] if self._previous_winners else None),
           critiques=shuffled_critiques,
           seed=self._get_new_seed(),
           num_retries_on_error=self._num_retries_on_error,
       )
-      statements.append(statement)
-      explanations.append(explanation)
+      for statement, explanation in results:
+        statements.append(statement)
+        explanations.append(explanation)
     return statements, explanations
 
   def _get_rankings(
