@@ -31,6 +31,7 @@ class MockStatementModel(base_model.BaseStatementModel):
       opinions: Sequence[str],
       previous_winner: str | None = None,
       critiques: Sequence[str] | None = None,
+      context: str | Sequence[str | None] | None = None,
       seed: int | None = None,
       num_retries_on_error: int = 1,
   ) -> base_model.StatementResult:
@@ -39,6 +40,10 @@ class MockStatementModel(base_model.BaseStatementModel):
     parts = [question, *opinions]
     if previous_winner is not None:
       parts.extend([previous_winner, *critiques])
+    if isinstance(context, str):
+      parts.append(context)
+    elif context is not None:
+      parts.extend(c for c in context if c is not None)
     statement = '\n'.join(parts)
     return base_model.StatementResult(
         statement=statement,

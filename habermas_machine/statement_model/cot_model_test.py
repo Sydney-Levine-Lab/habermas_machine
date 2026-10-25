@@ -117,6 +117,38 @@ class COTModelTest(parameterized.TestCase):
     self.assertEqual(statement, "Mock statement")
     self.assertEqual(explanation, "Mock explanation")
 
+  def test_prompt_without_context(self):
+    """Tests that prompts have no context section without context."""
+    prompt = cot_model._generate_prompt("Question?", ["A", "B"])
+    self.assertNotIn("Context About the Participants", prompt)
+    self.assertIn("the question and the individual opinions", prompt)
+
+  def test_prompt_with_shared_context(self):
+    """Tests that shared context is added to both prompts."""
+    context = "Everyone in the group is a software engineer."
+    for prompt in [
+        cot_model._generate_prompt("Question?", ["A", "B"], context=context),
+        cot_model._generate_prompt(
+            "Question?", ["A", "B"], "Winner.", ["C", "D"], context=context),
+    ]:
+      self.assertIn(f"Context About the Participants: {context}\n\n", prompt)
+      self.assertIn("context about the participants,", prompt)
+      self.assertLess(
+          prompt.index("Question?"), prompt.index("Context About"))
+      self.assertLess(
+          prompt.index("Context About"), prompt.index("Individual Opinions"))
+
+  def test_prompt_with_per_person_context(self):
+    """Tests that per-person context is numbered like the opinions."""
+    prompt = cot_model._generate_prompt(
+        "Question?", ["A", "B", "C"], context=["Engineer.", None, "Artist."])
+    self.assertIn(
+        "Context About the Participants:\nContext Person 1: Engineer.\n"
+        "Context Person 3: Artist.\n\nIndividual Opinions:",
+        prompt,
+    )
+    self.assertNotIn("Context Person 2", prompt)
+
 
 if __name__ == "__main__":
   absltest.main()

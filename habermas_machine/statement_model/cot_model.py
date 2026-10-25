@@ -21,6 +21,7 @@ import re
 
 from habermas_machine.llm_client import base_client
 from habermas_machine.statement_model import base_model
+from habermas_machine.statement_model import utils
 
 
 def _generate_opinion_critique_prompt(
@@ -28,8 +29,12 @@ def _generate_opinion_critique_prompt(
     opinions: Sequence[str],
     previous_winner: str,
     critiques: Sequence[str],
+    context: str | Sequence[str | None] | None = None,
 ) -> str:
   """Generates a prompt using opinions, previous winner, and critiques."""
+  context_section = utils.format_context(context)
+  context_description = (
+      ' context about the participants,' if context_section else '')
 
   prompt = f"""You are helping a group of people at Edge City reach a shared decision about something that will happen in the village. Edge City is a gathering on the coast of Goa where people come to do their best work of the year together. Mornings start with exercise or time in nature. Afternoons are for coworking at The Circle, a hub that faces the beach. Evenings have fireside talks, workshops, demo days, and dinners that people organize themselves. Small groups also run programs throughout the event on topics such as AI, crypto, longevity, governance, and consciousness.
 
@@ -60,12 +65,12 @@ We will hold a weekly community dinner at The Circle, since it is easier to set 
 </answer>
 
 
-Below you will find the question, the individual opinions, the previous draft consensus statement, and the critiques from the group members.
+Below you will find the question,{context_description} the individual opinions, the previous draft consensus statement, and the critiques from the group members.
 
 
 Question: {question}
 
-Individual Opinions:
+{context_section}Individual Opinions:
 """
   for i, opinion in enumerate(opinions):
     prompt += f'Opinion Person {i+1}: {opinion}\n'
@@ -85,8 +90,16 @@ Critiques of the Previous Draft:
 def _generate_opinion_only_prompt(
     question: str,
     opinions: Sequence[str],
+    context: str | Sequence[str | None] | None = None,
 ) -> str:
   """Generates a prompt for the LLM using only the opinions."""
+  context_section = utils.format_context(context)
+  data_description = (
+      'the question, context about the participants, and the individual'
+      ' opinions'
+      if context_section
+      else 'the question and the individual opinions'
+  )
   prompt = f"""
 You are helping a group of people at Edge City reach a shared decision about something that will happen in the village. Edge City is a gathering on the coast of Goa where people come to do their best work of the year together. Mornings start with exercise or time in nature. Afternoons are for coworking at The Circle, a hub that faces the beach. Evenings have fireside talks, workshops, demo days, and dinners that people organize themselves. Small groups also run programs throughout the event on topics such as AI, crypto, longevity, governance, and consciousness.
 
@@ -113,11 +126,11 @@ We will hold a final demo day where anyone can present. Demos will be short, and
 </answer>
 
 
-Below you will find the question and the individual opinions of the group members.
+Below you will find {data_description} of the group members.
 
 Question: {question}
 
-Individual Opinions:
+{context_section}Individual Opinions:
 """
 
   for i, opinion in enumerate(opinions):
@@ -131,13 +144,14 @@ def _generate_prompt(
     opinions: Sequence[str],
     previous_winner: str | None = None,
     critiques: Sequence[str] | None = None,
+    context: str | Sequence[str | None] | None = None,
 ) -> str:
   """Generates a prompt for the LLM."""
   if previous_winner is None:
-    return _generate_opinion_only_prompt(question, opinions)
+    return _generate_opinion_only_prompt(question, opinions, context)
   else:
     return _generate_opinion_critique_prompt(
-        question, opinions, previous_winner, critiques
+        question, opinions, previous_winner, critiques, context
     )
 
 
@@ -172,6 +186,7 @@ class COTModel(base_model.BaseStatementModel):
       opinions: Sequence[str],
       previous_winner: str | None = None,
       critiques: Sequence[str] | None = None,
+      context: str | Sequence[str | None] | None = None,
       seed: int | None = None,
       override_prompt: str | None = None,
       num_retries_on_error: int = 1,
@@ -182,7 +197,8 @@ class COTModel(base_model.BaseStatementModel):
     else:
       if num_retries_on_error < 0:
         raise ValueError('num_retries_on_error must be None or at least 0.')
-    prompt = _generate_prompt(question, opinions, previous_winner, critiques)
+    prompt = _generate_prompt(
+        question, opinions, previous_winner, critiques, context)
     statement, explanation = '', ''  # Dummy result.
     for _ in range(num_retries_on_error):
       response = llm_client.sample_text(

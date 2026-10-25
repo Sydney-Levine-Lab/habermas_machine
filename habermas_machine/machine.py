@@ -67,8 +67,32 @@ class HabermasMachine:
       seed: int | None = None,
       verbose: bool = False,
       num_retries_on_error: int | None = 8,
+      statement_context: str | Sequence[str | None] | None = None,
+      ranking_context: str | Sequence[str | None] | None = None,
   ):
-    """Initializes the Habermas Machine."""
+    """Initializes the Habermas Machine.
+
+    Args:
+      question: Question to be answered.
+      statement_client: LLM client used by the statement model.
+      reward_client: LLM client used by the reward model.
+      statement_model: Model that generates candidate statements.
+      reward_model: Model that predicts each citizen's ranking.
+      social_choice_method: Method that aggregates the rankings.
+      num_candidates: Number of candidate statements to generate per round.
+      num_citizens: Number of citizens in the deliberation.
+      seed: Optional seed for the random number generator.
+      verbose: Whether to print round information.
+      num_retries_on_error: Number of retries when a model returns an
+        erroneous response.
+      statement_context: Optional context about the citizens for the statement
+        model. Either a single string about the group or one optional string
+        per citizen, in the same order as the opinions.
+      ranking_context: Optional context about the citizens for the reward
+        model. Either a single string about the group, sent with every
+        citizen's ranking, or one optional string per citizen, in the same
+        order as the opinions.
+    """
     self._question = question  # Question to be answered.
     self._round = 0  # Current round (round 0 is the opinion round).
     self._critiques = []  # Critiques from current and previous rounds.
@@ -90,6 +114,26 @@ class HabermasMachine:
     self._opinions = []  # Initial opinions.
     # Number of retries when the model returns an erroroneous response.
     self._num_retries_on_error = num_retries_on_error
+    # Context about the citizens for the statement and reward models.
+    self._statement_context = self._validate_context(
+        statement_context, 'statement_context')
+    self._ranking_context = self._validate_context(
+        ranking_context, 'ranking_context')
+
+  def _validate_context(
+      self,
+      context: str | Sequence[str | None] | None,
+      name: str,
+  ) -> str | list[str | None] | None:
+    """Checks that per-citizen context has one entry per citizen."""
+    if context is None or isinstance(context, str):
+      return context
+    if len(context) != self._num_citizens:
+      raise ValueError(
+          f"Expected {self._num_citizens} entries in {name}, got"
+          f" {len(context)}."
+      )
+    return list(context)
 
   def _get_new_seed(self):
     """Generates a new random seed."""
@@ -108,6 +152,11 @@ class HabermasMachine:
       shuffled_critiques = (
           [self._critiques[-1][i] for i in indices] if self._critiques else None
       )
+      shuffled_context = (
+          [self._statement_context[j] for j in indices]
+          if isinstance(self._statement_context, list)
+          else self._statement_context
+      )
       results = self._statement_model.generate_statements(
           llm_client=self._statement_client,
           question=self._question,
@@ -116,6 +165,7 @@ class HabermasMachine:
           previous_winner=(
               self._previous_winners[-1] if self._previous_winners else None),
           critiques=shuffled_critiques,
+          context=shuffled_context,
           seed=self._get_new_seed(),
           num_retries_on_error=self._num_retries_on_error,
       )
@@ -143,6 +193,16 @@ class HabermasMachine:
               self._previous_winners[-1] if self._round > 0 else None
           ),
           critique=self._critiques[-1][i] if self._round > 0 else None,
+          group_context=(
+              self._ranking_context
+              if isinstance(self._ranking_context, str)
+              else None
+          ),
+          participant_context=(
+              self._ranking_context[i]
+              if isinstance(self._ranking_context, list)
+              else None
+          ),
           seed=self._get_new_seed(),
           num_retries_on_error=self._num_retries_on_error,
       )
@@ -188,6 +248,17 @@ class HabermasMachine:
       else:
         print(f"\n\nCritique round {self._round}.")
       print(f"\nQuestion: {self._question}")
+      if self._round == 0:
+        for name, context in [
+            ("Statement context", self._statement_context),
+            ("Ranking context", self._ranking_context),
+        ]:
+          if isinstance(context, str):
+            print(f"\n{name}: {context}")
+          elif context is not None:
+            print(f"\n{name}:")
+            for i, citizen_context in enumerate(context):
+              print(f"\tCitizen {i + 1}: {citizen_context}")
       print("\nOpinions:")
       for i, opinion in enumerate(self._opinions):
         print(f"\tCitizen {i + 1}: {opinion}")

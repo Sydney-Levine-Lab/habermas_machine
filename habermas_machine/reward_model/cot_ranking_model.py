@@ -37,6 +37,8 @@ class COTRankingModel(base_model.BaseRankingModel):
       statements: Sequence[str],
       previous_winner: str | None = None,
       critique: str | None = None,
+      group_context: str | None = None,
+      participant_context: str | None = None,
       seed: int | None = None,
       num_retries_on_error: int | None = None,
   ) -> base_model.RankingResult:
@@ -54,7 +56,13 @@ class COTRankingModel(base_model.BaseRankingModel):
       raise ValueError('There should be at least two statements to rank.')
 
     prompt = _generate_prompt(
-        question, opinion, statements, previous_winner, critique
+        question,
+        opinion,
+        statements,
+        previous_winner,
+        critique,
+        group_context,
+        participant_context,
     )
 
     ranking_result = base_model.RankingResult(None, None)  # Dummy result.
@@ -80,14 +88,47 @@ class COTRankingModel(base_model.BaseRankingModel):
     return ranking_result
 
 
+def _format_context(
+    group_context: str | None,
+    participant_context: str | None,
+) -> tuple[str, list[str]]:
+  """Formats context about the participants as a prompt section.
+
+  Args:
+    group_context: Optional context about the whole group of participants.
+    participant_context: Optional context about this participant.
+
+  Returns:
+    A tuple containing:
+      - The prompt section followed by a blank line, or an empty string if
+        there is no context.
+      - Descriptions of the given context for the prompt's introduction.
+  """
+  section = ''
+  descriptions = []
+  if group_context:
+    section += f'Context About the Participants: {group_context}\n\n'
+    descriptions.append('context about the participants')
+  if participant_context:
+    section += f'Context About the Participant: {participant_context}\n\n'
+    descriptions.append('context about the participant')
+  return section, descriptions
+
+
 def _generate_opinion_critique_prompt(
     question: str,
     opinion: str,
     statements: Sequence[str],
     previous_winner: str,
     critique: str,
+    group_context: str | None = None,
+    participant_context: str | None = None,
 ) -> str:
   """Generates a prompt for the LLM using opinion and critique."""
+  context_section, context_descriptions = _format_context(
+      group_context, participant_context)
+  context_description = ''.join(
+      f' {description},' for description in context_descriptions)
   prompt = f"""As an AI assistant, your job is to rank these statements in the order that the participant would most likely agree with them, based on their opinion and critique to a summary statement from a previous discussion round. Use Arrow notation for the ranking, where ">" means "preferred to". Ties are NOT allowed and items should be in descending order of preference so you can ONLY use ">" and the letters of the statements in the ranking. Examples of valid rankings: B > A, D > A > C > B. B > C > A > E > D.
 
 Please think through this task step-by-step:
@@ -127,11 +168,11 @@ A > D > B > C > E
 It is important to follow the template EXACTLY. So ALWAYS start with <answer>, then the explanation, then <sep> then only the final ranking and then </answer>.
 
 
-Below you will find the question, the participant's opinion, the statement from the previous round, and a critique of that statement. You will also find a list of statements to rank.
+Below you will find the question,{context_description} the participant's opinion, the statement from the previous round, and a critique of that statement. You will also find a list of statements to rank.
 
 Question: {question}
 
-Participant's Opinion: {opinion}
+{context_section}Participant's Opinion: {opinion}
 
 Statement from previous round: {previous_winner}
 
@@ -156,8 +197,18 @@ def _generate_opinion_only_prompt(
     question: str,
     opinion: str,
     statements: Sequence[str],
+    group_context: str | None = None,
+    participant_context: str | None = None,
 ) -> str:
   """Generates a prompt for the LLM using only the opinion."""
+  context_section, context_descriptions = _format_context(
+      group_context, participant_context)
+  data_items = [
+      'the question', *context_descriptions, "the participant's opinion"]
+  if len(data_items) == 2:
+    data_description = ' and '.join(data_items)
+  else:
+    data_description = ', '.join(data_items[:-1]) + ', and ' + data_items[-1]
   prompt = f"""
 Task: As an AI assistant, your job is to rank these statements in the order that the participant would most likely agree with them, based on their opinion. Use Arrow notation for the ranking, where ">" means "preferred to". Ties are NOT allowed and items should be in descending order of preference so you can ONLY use ">" and the letters of the statements in the final ranking. Examples of valid final rankings: B > A, D > A > C > D. B > C > A > E > D.
 
@@ -195,11 +246,11 @@ A > D > B > C > E
 It is important to follow the template EXACTLY. So ALWAYS start with <answer>, then the explanation, then <sep> then only the final ranking and then </answer>.
 
 
-Below you will find the question and the participant's opinion. You will also find a list of statements to rank.
+Below you will find {data_description}. You will also find a list of statements to rank.
 
 Question: {question}
 
-Participant's Opinion: {opinion}
+{context_section}Participant's Opinion: {opinion}
 
 Statements to rank:
 """
@@ -222,15 +273,23 @@ def _generate_prompt(
     statements: Sequence[str],
     previous_winner: str | None = None,
     critique: str | None = None,
+    group_context: str | None = None,
+    participant_context: str | None = None,
 ) -> str:
   """Generates a prompt for the LLM."""
   if previous_winner is None:
     return _generate_opinion_only_prompt(
-        question, opinion, statements
+        question, opinion, statements, group_context, participant_context
     )
   else:
     return _generate_opinion_critique_prompt(
-        question, opinion, statements, previous_winner, critique
+        question,
+        opinion,
+        statements,
+        previous_winner,
+        critique,
+        group_context,
+        participant_context,
     )
 
 

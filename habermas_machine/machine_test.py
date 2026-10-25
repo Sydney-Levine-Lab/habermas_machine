@@ -18,7 +18,9 @@ from absl.testing import parameterized
 
 from habermas_machine import machine
 from habermas_machine import types
+from habermas_machine.reward_model import mock_ranking_model
 from habermas_machine.social_choice import utils as sc_utils
+from habermas_machine.statement_model import mock_statement_model
 
 
 class HabermasMachineTest(parameterized.TestCase):
@@ -131,6 +133,91 @@ class HabermasMachineTest(parameterized.TestCase):
     _, _ = hm.mediate(['opinion1', 'opinion2'])  # Opinion round.
     with self.assertRaises(ValueError):
       hm.mediate(['critique1', 'critique2', 'critique3'])
+
+  def _make_machine(self, statement_model=None, reward_model=None, **kwargs):
+    return machine.HabermasMachine(
+        question='Question?',
+        statement_client=types.LLMCLient.MOCK.get_client('mock_url'),
+        reward_client=types.LLMCLient.MOCK.get_client('mock_url'),
+        statement_model=(
+            statement_model or types.StatementModel.MOCK.get_model()),
+        reward_model=reward_model or types.RewardModel.MOCK.get_model(),
+        social_choice_method=types.RankAggregation.SCHULZE.get_method(
+            tie_breaking_method=sc_utils.TieBreakingMethod.TIES_ALLOWED
+        ),
+        num_candidates=2,
+        **kwargs,
+    )
+
+  @parameterized.parameters('statement_context', 'ranking_context')
+  def test_wrong_number_of_context_entries(self, name):
+    with self.assertRaises(ValueError):
+      self._make_machine(num_citizens=2, **{name: ['a', 'b', 'c']})
+
+  def test_shared_context(self):
+    ranking_calls = []
+
+    class RecordingRankingModel(mock_ranking_model.MockRankingModel):
+
+      def predict_ranking(self, *args, **kwargs):
+        ranking_calls.append(
+            (kwargs['group_context'], kwargs['participant_context']))
+        return super().predict_ranking(*args, **kwargs)
+
+    hm = self._make_machine(
+        reward_model=RecordingRankingModel(),
+        num_citizens=2,
+        statement_context='Statement context.',
+        ranking_context='Ranking context.',
+    )
+    winner, _ = hm.mediate(['opinion1', 'opinion2'])
+    self.assertIn('Statement context.', winner)
+    self.assertEqual(ranking_calls, [('Ranking context.', None)] * 2)
+
+  def test_per_citizen_context_follows_citizens(self):
+    """Tests that per-citizen context stays aligned with each citizen."""
+    statement_calls = []
+    ranking_calls = []
+
+    class RecordingStatementModel(mock_statement_model.MockStatementModel):
+
+      def generate_statement(self, *args, **kwargs):
+        statement_calls.append((kwargs['opinions'], kwargs['context']))
+        return super().generate_statement(*args, **kwargs)
+
+    class RecordingRankingModel(mock_ranking_model.MockRankingModel):
+
+      def predict_ranking(self, *args, **kwargs):
+        ranking_calls.append((
+            kwargs['opinion'],
+            kwargs['group_context'],
+            kwargs['participant_context'],
+        ))
+        return super().predict_ranking(*args, **kwargs)
+
+    num_citizens = 5
+    opinions = [f'opinion{i}' for i in range(num_citizens)]
+    hm = self._make_machine(
+        statement_model=RecordingStatementModel(),
+        reward_model=RecordingRankingModel(),
+        num_citizens=num_citizens,
+        statement_context=[f'statement_context{i}' for i in range(5)],
+        ranking_context=[f'ranking_context{i}' for i in range(5)],
+    )
+    hm.mediate(opinions)
+
+    self.assertNotEmpty(statement_calls)
+    for shuffled_opinions, context in statement_calls:
+      self.assertEqual(
+          [o.replace('opinion', 'statement_context')
+           for o in shuffled_opinions],
+          context,
+      )
+    self.assertLen(ranking_calls, num_citizens)
+    for opinion, group_context, participant_context in ranking_calls:
+      self.assertIsNone(group_context)
+      self.assertEqual(
+          opinion.replace('opinion', 'ranking_context'), participant_context)
 
 
 if __name__ == '__main__':

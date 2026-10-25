@@ -86,6 +86,24 @@ class DiverseCOTModelTest(parameterized.TestCase):
     self.assertEqual(statement, "Mock statement")
     self.assertEqual(explanation, "Mock explanation")
 
+  def test_prompt_with_context(self):
+    """Tests that context is added to both prompts."""
+    for prompt in [
+        diverse_cot_model._generate_prompt(
+            "Question?", ["A", "B"], 3, context="Group context."),
+        diverse_cot_model._generate_prompt(
+            "Question?", ["A", "B"], 3, "Winner.", ["C", "D"],
+            context=["Person A.", "Person B."]),
+    ]:
+      self.assertIn("Context About the Participants", prompt)
+      self.assertIn("context about the participants,", prompt)
+
+  def test_prompt_without_context(self):
+    """Tests that prompts have no context section without context."""
+    prompt = diverse_cot_model._generate_prompt(
+        "Question?", ["A", "B"], 3, context=[None, None])
+    self.assertNotIn("Context About the Participants", prompt)
+
 
 if __name__ == "__main__":
   absltest.main()

@@ -41,6 +41,7 @@ class BaseStatementModel(abc.ABC):
       opinions: Sequence[str],
       previous_winner: str | None = None,
       critiques: Sequence[str] | None = None,
+      context: str | Sequence[str | None] | None = None,
       seed: int | None = None,
       num_retries_on_error: int = 1,
   ) -> StatementResult:
@@ -52,6 +53,9 @@ class BaseStatementModel(abc.ABC):
       opinions: Text-based opinions of the citizens.
       previous_winner: The statement that won the previous round.
       critiques: Critiques of the previous winner.
+      context: Optional context about the participants. Either a single string
+        about the group or one optional string per participant, in the same
+        order as the opinions.
       seed: Optional seed for the sampling. If None a random seed will be used.
       num_retries_on_error: Number of retries when it hits an error. Default is
         1. If it runs out of retries, it returns the last result.
@@ -71,6 +75,7 @@ class BaseStatementModel(abc.ABC):
       num_statements: int,
       previous_winner: str | None = None,
       critiques: Sequence[str] | None = None,
+      context: str | Sequence[str | None] | None = None,
       seed: int | None = None,
       num_retries_on_error: int = 1,
   ) -> list[StatementResult]:
@@ -86,6 +91,9 @@ class BaseStatementModel(abc.ABC):
       num_statements: Maximum number of statements to generate.
       previous_winner: The statement that won the previous round.
       critiques: Critiques of the previous winner.
+      context: Optional context about the participants. Either a single string
+        about the group or one optional string per participant, in the same
+        order as the opinions.
       seed: Optional seed for the sampling. If None a random seed will be used.
       num_retries_on_error: Number of retries when it hits an error.
 
@@ -100,6 +108,7 @@ class BaseStatementModel(abc.ABC):
             opinions=opinions,
             previous_winner=previous_winner,
             critiques=critiques,
+            context=context,
             seed=seed,
             num_retries_on_error=num_retries_on_error,
         )

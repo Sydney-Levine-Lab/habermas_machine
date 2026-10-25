@@ -37,6 +37,8 @@ class MockRankingModel(base_model.BaseRankingModel):
       statements: Sequence[str],
       previous_winner: str | None = None,
       critique: str | None = None,
+      group_context: str | None = None,
+      participant_context: str | None = None,
       seed: int | None = None,
       num_retries_on_error: int = 1,
   ) -> base_model.RankingResult:
@@ -47,6 +49,8 @@ class MockRankingModel(base_model.BaseRankingModel):
         opinion,
         previous_winner,
         critique,
+        group_context,
+        participant_context,
         seed,
         num_retries_on_error,
     )

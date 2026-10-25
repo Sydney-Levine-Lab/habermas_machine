@@ -148,6 +148,64 @@ class COTRankingModelTest(parameterized.TestCase):
     np.testing.assert_array_equal(ranking_result.ranking, expected_ranking)
     self.assertEqual(ranking_result.explanation, expected_explanation)
 
+  def test_prompt_with_participant_context(self):
+    """Tests that participant context is added to both prompts."""
+    for prompt in [
+        cot_ranking_model._generate_prompt(
+            "Question?", "Opinion.", ["X", "Y"],
+            participant_context="An engineer."),
+        cot_ranking_model._generate_prompt(
+            "Question?", "Opinion.", ["X", "Y"], "Winner.", "Critique.",
+            participant_context="An engineer."),
+    ]:
+      self.assertIn(
+          "Context About the Participant: An engineer.\n\n"
+          "Participant's Opinion:",
+          prompt,
+      )
+      self.assertIn("context about the participant,", prompt)
+      self.assertNotIn("Context About the Participants", prompt)
+
+  def test_prompt_with_group_context(self):
+    """Tests that group context is added to both prompts."""
+    for prompt in [
+        cot_ranking_model._generate_prompt(
+            "Question?", "Opinion.", ["X", "Y"], group_context="Engineers."),
+        cot_ranking_model._generate_prompt(
+            "Question?", "Opinion.", ["X", "Y"], "Winner.", "Critique.",
+            group_context="Engineers."),
+    ]:
+      self.assertIn(
+          "Context About the Participants: Engineers.\n\n"
+          "Participant's Opinion:",
+          prompt,
+      )
+      self.assertIn("context about the participants,", prompt)
+      self.assertNotIn("Context About the Participant:", prompt)
+
+  def test_prompt_with_both_contexts(self):
+    """Tests that group context comes before participant context."""
+    prompt = cot_ranking_model._generate_prompt(
+        "Question?", "Opinion.", ["X", "Y"], group_context="Engineers.",
+        participant_context="A vegan.")
+    self.assertIn(
+        "Context About the Participants: Engineers.\n\n"
+        "Context About the Participant: A vegan.\n\n",
+        prompt,
+    )
+    self.assertIn(
+        "the question, context about the participants, context about the"
+        " participant, and the participant's opinion.",
+        prompt,
+    )
+
+  def test_prompt_without_context(self):
+    """Tests that prompts have no context section without context."""
+    prompt = cot_ranking_model._generate_prompt(
+        "Question?", "Opinion.", ["X", "Y"])
+    self.assertNotIn("Context About the Participant", prompt)
+    self.assertIn("the question and the participant's opinion.", prompt)
+
 
 if __name__ == '__main__':
   absltest.main()
