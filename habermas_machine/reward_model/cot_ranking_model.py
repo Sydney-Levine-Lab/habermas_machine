@@ -55,7 +55,7 @@ class COTRankingModel(base_model.BaseRankingModel):
     if len(statements) < 2:
       raise ValueError('There should be at least two statements to rank.')
 
-    prompt = _generate_prompt(
+    prompt = self._generate_prompt(
         question,
         opinion,
         statements,
@@ -86,6 +86,27 @@ class COTRankingModel(base_model.BaseRankingModel):
 
     # If we reach here, all retries failed. return the last result.
     return ranking_result
+
+  def _generate_prompt(
+      self,
+      question: str,
+      opinion: str,
+      statements: Sequence[str],
+      previous_winner: str | None = None,
+      critique: str | None = None,
+      group_context: str | None = None,
+      participant_context: str | None = None,
+  ) -> str:
+    """Generates the ranking prompt. Subclasses can override the prompt."""
+    return _generate_prompt(
+        question,
+        opinion,
+        statements,
+        previous_winner,
+        critique,
+        group_context,
+        participant_context,
+    )
 
 
 def _format_context(
