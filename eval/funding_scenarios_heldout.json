@@ -1,0 +1,217 @@
+[
+  {
+    "id": "three_way_split",
+    "tests": "Three camps of similar size, each centered on a different expensive proposal.",
+    "funding_pool": 4000,
+    "proposals": [
+      {"id": "P1", "title": "Robotics build week", "description": "Parts and a mentor for teams building small robots over one week.", "minimum": 1500, "ideal": 2200},
+      {"id": "P2", "title": "Yoga and breathwork retreat day", "description": "A full day at a retreat center with two instructors and meals.", "minimum": 1400, "ideal": 2000},
+      {"id": "P3", "title": "Spice plantation visit", "description": "Bus, entry, and a guided tour of a spice plantation with lunch.", "minimum": 1300, "ideal": 1900},
+      {"id": "P4", "title": "Printed event map and guide", "description": "A printed map of venues, routes, and local services.", "minimum": 150, "ideal": 300},
+      {"id": "P5", "title": "Beach bonfire nights", "description": "Firewood, permits, and a fire safety person for weekly bonfires.", "minimum": 200, "ideal": 500},
+      {"id": "P6", "title": "Hackerspace soldering stations", "description": "Three soldering stations with fume extractors at The Circle.", "minimum": 400, "ideal": 700},
+      {"id": "P7", "title": "Wine tasting evening", "description": "A sommelier-led tasting of Indian wines.", "minimum": 500, "ideal": 900}
+    ],
+    "opinions": [
+      "The robotics build week is why I came. Soldering stations would help too. A printed map would help newcomers find things.",
+      "Robotics week, definitely, and the soldering stations. The map is a good small thing. No wine tasting, not everyone drinks.",
+      "Fund the retreat day; most of us are burned out. Bonfires are lovely. The map makes sense. Skip the wine tasting.",
+      "The retreat day and the bonfires. A printed map, yes. Wine tasting excludes people who don't drink.",
+      "I want the spice plantation visit, it's real Goa. Bonfires too. The map is useful. No wine.",
+      "Spice plantation trip please. And a printed map for sure. Wine tasting is not inclusive."
+    ],
+    "consensus": [
+      {"rule": "funded", "id": "P4"},
+      {"rule": "zero", "id": "P7"}
+    ],
+    "disagreements": [
+      "Persons 1-2 want the robotics week and soldering stations, Persons 3-4 want the retreat day and bonfires, Persons 5-6 want the plantation visit (Person 5 also bonfires). The fund fits at most two of the three big proposals."
+    ],
+    "critique_round": {
+      "previous_slate": {"summary": "Fund robotics and the retreat day, plus the map.", "allocations": [
+        {"id": "P1", "amount": 1800, "reason": "Two people want it."},
+        {"id": "P2", "amount": 1900, "reason": "Two people want it."},
+        {"id": "P3", "amount": 0, "reason": "Doesn't fit."},
+        {"id": "P4", "amount": 300, "reason": "Everyone wants a map."},
+        {"id": "P5", "amount": 0, "reason": "Doesn't fit."},
+        {"id": "P6", "amount": 0, "reason": "Doesn't fit."},
+        {"id": "P7", "amount": 0, "reason": "Everyone opposes it."}
+      ]},
+      "critiques": [
+        "Good, but robotics at $1,800 is tight. Fine overall.",
+        "Okay. I'd add soldering stations by trimming the retreat.",
+        "Happy with this.",
+        "Good, though I'd like bonfires too.",
+        "The plantation visit got nothing. Swap it in for robotics or the retreat.",
+        "Leaving out the plantation entirely isn't fair. Fund it at its minimum and cut the other two."
+      ],
+      "consensus": [],
+      "disagreements": [
+        "Persons 5-6 want the plantation visit swapped in; Persons 1, 3 are content; Persons 2 and 4 want small additions (soldering stations, bonfires)."
+      ]
+    }
+  },
+  {
+    "id": "big_pool_emerging_veto",
+    "tests": "A larger pool where the critique round reveals a new shared objection.",
+    "funding_pool": 6000,
+    "proposals": [
+      {"id": "P1", "title": "Drone light show", "description": "A 50-drone light show over the beach on the final night.", "minimum": 2500, "ideal": 3500},
+      {"id": "P2", "title": "Founder mentorship dinners", "description": "Weekly dinners pairing experienced founders with new builders.", "minimum": 600, "ideal": 1200},
+      {"id": "P3", "title": "Beach accessibility mats", "description": "Mats and a ramp so wheelchair users can reach the water.", "minimum": 700, "ideal": 1100},
+      {"id": "P4", "title": "Open science grants", "description": "Small grants for attendees running experiments during the event.", "minimum": 1000, "ideal": 2000},
+      {"id": "P5", "title": "Local music nights", "description": "Pay local bands to play twice a week.", "minimum": 500, "ideal": 1000},
+      {"id": "P6", "title": "Shuttle between venues", "description": "A shuttle van running between the three main venues.", "minimum": 800, "ideal": 1500}
+    ],
+    "opinions": [
+      "A drone show would be a magical ending. Accessibility mats are important. Science grants are great.",
+      "Accessibility mats are a must. I'd fund the science grants generously. The drone show feels wasteful.",
+      "Mats, shuttle, and music nights. Practical things.",
+      "The drone show! And the mats, everyone should be able to swim.",
+      "Accessibility mats first. Founder dinners would help me a lot.",
+      "Science grants and mats. The shuttle would save so much time.",
+      "Mats for sure. Local music nights support the community here."
+    ],
+    "consensus": [
+      {"rule": "funded", "id": "P3"}
+    ],
+    "disagreements": [
+      "The drone show (Persons 1, 4 for; Person 2 against) versus spreading money across grants, shuttle, music, and dinners.",
+      "How much to put into science grants (Persons 1, 2, 6) versus practical items like the shuttle (Persons 3, 6) and music (Persons 3, 7)."
+    ],
+    "critique_round": {
+      "previous_slate": {"summary": "Fund the drone show, the mats, science grants, and the shuttle.", "allocations": [
+        {"id": "P1", "amount": 2500, "reason": "A memorable ending two people want."},
+        {"id": "P2", "amount": 0, "reason": "Only one person asked."},
+        {"id": "P3", "amount": 1100, "reason": "Everyone wants accessibility."},
+        {"id": "P4", "amount": 1600, "reason": "Three people want grants."},
+        {"id": "P5", "amount": 0, "reason": "Doesn't fit."},
+        {"id": "P6", "amount": 800, "reason": "Two people want it."}
+      ]},
+      "critiques": [
+        "I just learned the drone show needs a permit that won't arrive in time. Drop it.",
+        "Agree, drop the drone show, the permit won't come through. Put it into grants.",
+        "The drone show can't get a permit, so it should get nothing. Add music nights.",
+        "Sad, but the permit issue is real. No drone show. Maybe music nights instead.",
+        "Drop the drone show given the permit problem. Add founder dinners.",
+        "Without a permit the drone show is impossible. More for the shuttle and grants.",
+        "No drone show then. Music nights please."
+      ],
+      "consensus": [
+        {"rule": "zero", "id": "P1"}
+      ],
+      "disagreements": [
+        "Where the $2,500 from the drone show goes: grants (Persons 2, 6), music nights (Persons 3, 4, 7), founder dinners (Person 5), shuttle (Person 6)."
+      ]
+    }
+  },
+  {
+    "id": "reserve_and_vetoes",
+    "tests": "A requested reserve plus two shared vetoes, leaving a narrow set of options.",
+    "funding_pool": 3000,
+    "proposals": [
+      {"id": "P1", "title": "Prediction market game", "description": "A play-money prediction market on event outcomes, with prizes.", "minimum": 400, "ideal": 800},
+      {"id": "P2", "title": "Jet ski rentals", "description": "Subsidized jet ski rentals for attendees.", "minimum": 600, "ideal": 1200},
+      {"id": "P3", "title": "Mangrove kayaking tour", "description": "Guided kayaking through the mangroves with a naturalist.", "minimum": 700, "ideal": 1200},
+      {"id": "P4", "title": "Women in tech breakfast", "description": "Weekly breakfasts for women and nonbinary builders.", "minimum": 200, "ideal": 500},
+      {"id": "P5", "title": "Late-night ramen bar", "description": "A ramen stand open until 2am at The Circle.", "minimum": 500, "ideal": 900},
+      {"id": "P6", "title": "Philosophy walks", "description": "Guided walks with discussion prompts at dawn.", "minimum": 100, "ideal": 250}
+    ],
+    "opinions": [
+      "Keep $500 back for things that come up later. Jet skis are noisy and bad for the reef, no. The ramen bar would keep people up too late, no. I like the kayaking tour.",
+      "Hold $500 in reserve. No jet skis, they disturb the wildlife. No ramen bar. The prediction market sounds fun.",
+      "Reserve $500. Skip jet skis and the late-night ramen. The women in tech breakfast matters to me.",
+      "Agree on keeping $500 back. Jet skis and the ramen bar are both bad ideas. Kayaking and philosophy walks.",
+      "Keep $500 in reserve. No jet skis, no ramen bar. Prediction market and the breakfasts."
+    ],
+    "consensus": [
+      {"rule": "reserve", "amount": 500},
+      {"rule": "zero", "id": "P2"},
+      {"rule": "zero", "id": "P5"}
+    ],
+    "disagreements": [
+      "How to split $2,500 among kayaking (Persons 1, 4), the prediction market (Persons 2, 5), the breakfasts (Persons 3, 5), and philosophy walks (Person 4)."
+    ],
+    "critique_round": {
+      "previous_slate": {"summary": "Fund kayaking, the prediction market, and the breakfasts, keeping $500 back.", "allocations": [
+        {"id": "P1", "amount": 800, "reason": "Two people want it."},
+        {"id": "P2", "amount": 0, "reason": "Everyone opposes it."},
+        {"id": "P3", "amount": 1200, "reason": "Two people want it."},
+        {"id": "P4", "amount": 500, "reason": "Two people want it."},
+        {"id": "P5", "amount": 0, "reason": "Everyone opposes it."},
+        {"id": "P6", "amount": 0, "reason": "Only one person asked."}
+      ]},
+      "critiques": [
+        "Good.",
+        "Fine, the market is in.",
+        "Good, the breakfasts are fully funded.",
+        "Philosophy walks are only $250 and got nothing. I'd cut kayaking a bit to fit them.",
+        "Looks right."
+      ],
+      "consensus": [],
+      "disagreements": [
+        "Whether to trim kayaking to fit philosophy walks (Person 4) or keep the draft (Persons 1, 2, 3, 5)."
+      ]
+    }
+  },
+  {
+    "id": "nine_people_minorities",
+    "tests": "Nine people with a broad majority view and two strong minority views.",
+    "funding_pool": 4500,
+    "proposals": [
+      {"id": "P1", "title": "Coworking upgrades", "description": "Better chairs, fans, and power strips at The Circle.", "minimum": 800, "ideal": 1500},
+      {"id": "P2", "title": "Ayurveda clinic day", "description": "A local Ayurveda doctor offers consultations for a day.", "minimum": 300, "ideal": 600},
+      {"id": "P3", "title": "Crypto security workshop", "description": "A security researcher teaches wallet and key hygiene.", "minimum": 400, "ideal": 800},
+      {"id": "P4", "title": "Turtle nesting conservation", "description": "Support a local group protecting turtle nests on the beach.", "minimum": 300, "ideal": 1000},
+      {"id": "P5", "title": "Film screening nights", "description": "Projector, screen, and licenses for weekly films on the beach.", "minimum": 300, "ideal": 600},
+      {"id": "P6", "title": "Hike to the waterfall", "description": "Transport and a guide for a hike to a jungle waterfall.", "minimum": 700, "ideal": 1100},
+      {"id": "P7", "title": "Startup pitch practice", "description": "Investors give feedback on pitches in weekly sessions.", "minimum": 200, "ideal": 500},
+      {"id": "P8", "title": "Recovery lounge", "description": "Massage chairs and a quiet lounge for recovery.", "minimum": 900, "ideal": 1600}
+    ],
+    "opinions": [
+      "Coworking upgrades, the chairs are terrible. Film nights would be fun.",
+      "Coworking upgrades and the waterfall hike.",
+      "Coworking upgrades first. Pitch practice too.",
+      "Upgrade the coworking space. Film nights.",
+      "Coworking upgrades and the hike.",
+      "Fix the coworking chairs. The security workshop would be useful.",
+      "Coworking upgrades. Pitch practice.",
+      "Turtle conservation is the only thing that gives back to this beach. Fund it fully, ideally more. Coworking upgrades are fine.",
+      "The recovery lounge would make the biggest difference to my health. Coworking upgrades are fine too."
+    ],
+    "consensus": [
+      {"rule": "funded", "id": "P1"}
+    ],
+    "disagreements": [
+      "Mixed support for film nights (Persons 1, 4), the hike (Persons 2, 5), pitch practice (Persons 3, 7), and the security workshop (Person 6).",
+      "Strong single-person views: Person 8 wants turtle conservation fully funded or more; Person 9 wants the recovery lounge."
+    ],
+    "critique_round": {
+      "previous_slate": {"summary": "Fund coworking upgrades, the hike, film nights, pitch practice, and turtles.", "allocations": [
+        {"id": "P1", "amount": 1500, "reason": "Everyone wants it."},
+        {"id": "P2", "amount": 0, "reason": "No one asked."},
+        {"id": "P3", "amount": 400, "reason": "One person wants it."},
+        {"id": "P4", "amount": 500, "reason": "One person feels strongly."},
+        {"id": "P5", "amount": 600, "reason": "Two people want it."},
+        {"id": "P6", "amount": 1000, "reason": "Two people want it."},
+        {"id": "P7", "amount": 500, "reason": "Two people want it."},
+        {"id": "P8", "amount": 0, "reason": "Too expensive for one person."}
+      ]},
+      "critiques": [
+        "Good.",
+        "Good, the hike is in.",
+        "Fine.",
+        "Good.",
+        "Hike at $1,000 is fine.",
+        "Security workshop at its minimum is okay.",
+        "Good.",
+        "Turtles at $500 only covers half the nests. Please give them the full $1,000.",
+        "The recovery lounge got nothing. I'd take money from the hike and films."
+      ],
+      "consensus": [],
+      "disagreements": [
+        "Most people are content; Person 8 wants turtles raised to $1,000; Person 9 wants the recovery lounge funded by cutting the hike and films."
+      ]
+    }
+  }
+]

@@ -41,7 +41,7 @@ from concurrent import futures
 import importlib.util
 import itertools
 import json
-import os
+import math
 import pathlib
 import re
 import statistics
@@ -69,30 +69,49 @@ def _record_usage(client: openai_client.OpenAIClient) -> None:
 
   def wrapped(*args, **kwargs):
     response = create(*args, **kwargs)
-    _usage.value = response.usage
+    _usage.value.append(response.usage)
     return response
 
   client._client.chat.completions.create = wrapped  # pylint: disable=protected-access
 
 
-def _sample(client, prompt, attempts=4, **kwargs):
-  """Samples text, retrying transient API errors. Returns (text, usage)."""
+def _with_usage(fn, attempts=4):
+  """Calls fn, retrying transient API errors. Returns (result, usage).
+
+  The usage adds up the tokens of every API call that fn makes.
+  """
   for attempt in range(attempts):
     try:
-      _usage.value = None
-      text = client.sample_text(prompt, **kwargs)
-      usage = _usage.value
-      details = getattr(usage, 'completion_tokens_details', None)
-      return text, {
-          'input': usage.prompt_tokens,
-          'output': usage.completion_tokens,
-          'reasoning': getattr(details, 'reasoning_tokens', 0) or 0,
+      _usage.value = []
+      result = fn()
+      return result, {
+          'calls': len(_usage.value),
+          'input': sum(u.prompt_tokens for u in _usage.value),
+          'output': sum(u.completion_tokens for u in _usage.value),
+          'reasoning': sum(
+              getattr(u.completion_tokens_details, 'reasoning_tokens', 0) or 0
+              for u in _usage.value),
       }
     except Exception as exc:  # pylint: disable=broad-except
       if attempt == attempts - 1:
         raise
       print(f'API error ({exc!r}), retrying.')
       time.sleep(5 * 2**attempt)
+
+
+def _sample(client, prompt, **kwargs):
+  """Samples text, retrying transient API errors. Returns (text, usage)."""
+  return _with_usage(lambda: client.sample_text(prompt, **kwargs))
+
+
+def _slate_json(slate: funding.FundingSlate) -> str:
+  """Writes a parsed slate back as JSON so it can be scored."""
+  return json.dumps({
+      'summary': slate.summary,
+      'allocations': [
+          {'id': a.proposal_id, 'amount': a.amount, 'reason': a.reason}
+          for a in slate.allocations],
+  })
 
 
 def load_module(path: str | None):
@@ -176,8 +195,12 @@ def _distance(a, b, funding_pool) -> float:
   ) / (2 * funding_pool)
 
 
-def score_slates(slate_texts, scenario, consensus):
-  """Scores parsed slates against the constraints, consensus, and diversity."""
+def score_slates(slate_texts, scenario, consensus, padding_allowed=False):
+  """Scores parsed slates against the constraints, consensus, and diversity.
+
+  When padding_allowed is set, the rules leave fewer than NUM_SLATES distinct
+  slates that spend the whole fund, so unspent money is not a violation.
+  """
   proposals = _proposals(scenario)
   pool = scenario['funding_pool']
   records = []
@@ -191,7 +214,8 @@ def score_slates(slate_texts, scenario, consensus):
       continue
     record['slate'] = slate
     record['amounts'] = [a.amount for a in slate.allocations]
-    record['unspent'] = unspent_violation(slate, proposals, consensus, pool)
+    record['unspent'] = not padding_allowed and unspent_violation(
+        slate, proposals, consensus, pool)
     record['consensus_failures'] = consensus_failures(slate, consensus, pool)
     records.append(record)
 
@@ -308,21 +332,55 @@ def judge(client, scenario, mode, records):
   return scores, usage
 
 
-def run_one(module, gen_client, judge_client, scenario, mode, sample):
-  """Generates and scores one set of slates."""
+def _generate(module, model_kwargs, gen_client, scenario, mode):
+  """Generates slates once, without retries. Returns (texts, info, usage)."""
   proposals = _proposals(scenario)
   pool = scenario['funding_pool']
-  previous, critiques, consensus, _ = _mode_data(scenario, mode)
-  prompt = module._generate_prompt(  # pylint: disable=protected-access
-      funding.default_question(pool), scenario['opinions'], NUM_SLATES,
-      proposals, pool, previous, critiques)
+  previous, critiques, _, _ = _mode_data(scenario, mode)
+  question = funding.default_question(pool)
+  # pylint: disable=protected-access
+  if not hasattr(module, '_select'):
+    # Older modules write the slates in a single call with no selection.
+    prompt = module._generate_prompt(
+        question, scenario['opinions'], NUM_SLATES, proposals, pool, previous,
+        critiques)
+    response, usage = _sample(
+        gen_client, prompt, max_tokens=module._MAX_TOKENS,
+        terminators=['</answer>'], timeout=module._TIMEOUT_SECONDS)
+    texts, explanation = module._process_model_response(response)
+    return texts, {'explanation': explanation, 'response': response}, usage
+  model = module.FundingSlateModel(proposals, pool, **model_kwargs)
+  num_candidates = math.ceil(NUM_SLATES * model._oversample)
+  (candidates, errors), usage = _with_usage(lambda: model._sample_candidates(
+      gen_client, question, scenario['opinions'], num_candidates, previous,
+      critiques, None, None))
+  selected = module._select(candidates, NUM_SLATES)
+  if hasattr(module, '_pad'):
+    selected = module._pad(selected, NUM_SLATES, proposals, pool)
+  return [_slate_json(c.slate) for c in selected], {
+      'explanation': candidates[0].explanation if candidates else '',
+      'num_candidates': num_candidates,
+      'num_valid_candidates': len(candidates),
+      'candidate_errors': errors,
+      'sides': [c.side for c in candidates],
+      'selected_sides': [c.side for c in selected],
+  }, usage
+  # pylint: enable=protected-access
+
+
+def run_one(module, model_kwargs, gen_client, judge_client, scenario, mode,
+            sample):
+  """Generates and scores one set of slates."""
+  _, _, consensus, _ = _mode_data(scenario, mode)
+  padding_allowed = (
+      mode == 'critique'
+      and scenario['critique_round'].get('padding_allowed', False))
   start = time.time()
-  response, gen_usage = _sample(
-      gen_client, prompt, max_tokens=module._MAX_TOKENS,  # pylint: disable=protected-access
-      terminators=['</answer>'], timeout=module._TIMEOUT_SECONDS)  # pylint: disable=protected-access
+  slate_texts, info, gen_usage = _generate(
+      module, model_kwargs, gen_client, scenario, mode)
   seconds = time.time() - start
-  slate_texts, explanation = module._process_model_response(response)  # pylint: disable=protected-access
-  records, metrics = score_slates(slate_texts, scenario, consensus)
+  records, metrics = score_slates(
+      slate_texts, scenario, consensus, padding_allowed)
   judge_scores, judge_usage = (
       judge(judge_client, scenario, mode, records) if judge_client
       else (None, None))
@@ -334,8 +392,7 @@ def run_one(module, gen_client, judge_client, scenario, mode, sample):
       'judge': judge_scores,
       'usage': {'generation': gen_usage, 'judge': judge_usage},
       'seconds': seconds,
-      'explanation': explanation,
-      'response': response,
+      **info,
       'slates': [
           {k: v for k, v in r.items() if k != 'slate'} for r in records],
   }
@@ -401,10 +458,15 @@ def main():
                       default=['opinion_only', 'critique'])
   parser.add_argument('--no-judge', action='store_true')
   parser.add_argument('--workers', type=int, default=24)
+  parser.add_argument('--scenario-file', default=str(SCENARIOS))
+  parser.add_argument('--oversample', type=float)
   args = parser.parse_args()
 
   module = load_module(args.variant)
-  scenarios = json.loads(SCENARIOS.read_text())
+  scenarios = json.loads(pathlib.Path(args.scenario_file).read_text())
+  model_kwargs = {}
+  if args.oversample is not None:
+    model_kwargs['oversample'] = args.oversample
   if args.scenarios:
     scenarios = [s for s in scenarios if s['id'] in args.scenarios]
   gen_client = openai_client.OpenAIClient(
@@ -421,7 +483,8 @@ def main():
   results = []
   with futures.ThreadPoolExecutor(args.workers) as pool:
     pending = {
-        pool.submit(run_one, module, gen_client, judge_client, s, m, i):
+        pool.submit(run_one, module, model_kwargs, gen_client, judge_client,
+                    s, m, i):
         (s['id'], m, i) for s, m, i in jobs}
     for future in futures.as_completed(pending):
       try:

@@ -156,6 +156,7 @@
       "consensus": [
         {"rule": "at_least", "id": "P3", "amount": 1000}
       ],
+      "padding_allowed": true,
       "disagreements": [
         "With $1,500 left after the kids' program, whether it goes to the heritage trip (Persons 3, 6), monitors (Persons 1, 5), the workshop (Person 2), or the meditation day (Person 4)."
       ]
