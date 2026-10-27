@@ -51,17 +51,35 @@ _EXAMPLE_SLATE_2 = """{"summary": "Fund more projects at smaller amounts so the 
 _RULES = """Every slate must follow these rules:
 - Include every proposal exactly once, using only the proposal IDs listed below. Do not add, rename, merge, or change proposals.
 - Give each proposal either $0 or at least its minimum amount. Never give a proposal more than $0 but less than its minimum.
-- Try to stay at or below each proposal's ideal amount. Give more than the ideal only when the group clearly wants it, and say why in the reason.
+- Try to stay at or below each proposal's ideal amount. Give more than the ideal only when someone asked for more of that proposal or it serves what people said (for example, more spots), and say why in the reason.
 - Use whole dollars.
-- The total must not be more than {pool}. Use the whole fund: if money is left over, raise funded proposals toward their ideal amounts or fund another proposal. Leave money unallocated only for a specific reason, such as the group asking to keep some money back or no remaining proposal fitting in what is left, and say what that reason is in the summary.
+- The total must not be more than {pool}. Use the whole fund: if money is left over, raise funded proposals toward their ideal amounts or fund another proposal. Leave money unallocated only for a specific reason, such as the group asking to keep some money back, or every funded proposal being at its ideal and no remaining proposal that the group has not rejected fitting in what is left, and say what that reason is in the summary.
 - Give a one-sentence reason for every amount, including $0."""
+
+_DIVERSITY = """How to make the {num_statements} slates differ:
+- Points that everyone agrees on are fixed. Every slate must follow them, and no slate should cut a proposal that everyone supports below what people asked for just to create variety.
+- Find each real disagreement, its sides, and how many people hold each side.
+- For every side of a disagreement, include at least one slate that gives that side what it asked for as fully as the fund and the agreed points allow, even if only one or two people hold it. Do not let compromises crowd out these clear options.
+- Use the remaining slates for compromises and other mixes, giving more slates to views with more support.
+- Make every slate a distinct alternative that someone in the group would prefer to all the others. Two slates that fund the same proposals must move at least {min_shift} between proposals; small adjustments are not new alternatives.
+- If members mostly agree, differ on other choices that matter, such as whether to fully fund a few projects or fund more projects at smaller amounts, and which borderline proposals to include.
+- Always write exactly {num_statements} slates. If the rules leave few allocations open, create alternatives by choosing which supported proposals to fund, funding some at their minimum and others at their ideal, or giving more than the ideal to proposals where people asked for more (for example, more spots or more sessions).{extra}"""
+
+_CRITIQUE_EXTRA = """
+- If some members were content with the previous draft, include one slate that stays close to it while making the changes that everyone asked for."""
+
+
+def _min_shift(funding_pool: int) -> str:
+  """Smallest change that makes two slates real alternatives."""
+  return funding.format_amount(max(50, round(funding_pool * 0.1 / 50) * 50))
+
 
 _FORMAT = """Write each slate as a JSON object with this shape:
 {{"summary": "<one or two sentences on the overall approach>", "allocations": [{{"id": "<proposal ID>", "amount": <whole dollars>, "reason": "<one sentence>"}}, ...]}}
 
 Provide your answer in the following format, with exactly {num_statements} slates separated by <sep>:
 <answer>
-[Your step-by-step reasoning and explanation for the slates]
+[Your concise step-by-step reasoning, including a one-line plan for each slate]
 <sep>
 [Funding slate 1 as JSON]
 <sep>
@@ -115,19 +133,21 @@ def _generate_opinion_critique_prompt(
 
 {funding.fund_description(funding_pool)}
 
-Each person in the group shared their opinion, someone wrote a first draft of a funding slate, and group members then critiqued that draft. A funding slate says how much money each proposal gets and why. Your job is to generate {num_statements} revised funding slates that use this feedback to better reflect what the group wants. The group will choose one of these slates, so make them real alternatives that differ clearly from each other. Every slate must match the points that all group members agree on. Where members disagree, the slates should take different sides. If members mostly agree, the slates should instead differ on other choices that matter, such as whether to fully fund a few projects or fund more projects at smaller amounts, and which borderline proposals to include.
+Each person in the group shared their opinion, someone wrote a first draft of a funding slate, and group members then critiqued that draft. A funding slate says how much money each proposal gets and why. Your job is to generate {num_statements} revised funding slates that use this feedback to better reflect what the group wants. The group will vote on these slates, so make them real alternatives that differ clearly from each other.
 
 Base the slates on what the group members said. Use proposal details, such as cost and how realistic a project is, only to settle choices that the opinions and critiques leave open, and never claim support that no one expressed.
 
 {_RULES.format(pool=pool)}
+
+{_DIVERSITY.format(num_statements=num_statements, min_shift=_min_shift(funding_pool), extra=_CRITIQUE_EXTRA)}
 
 Please think through this task step-by-step:
 
 1. Read the individual opinions carefully. Note which proposals people support or oppose, where they agree, and where they disagree.
 2. Review the previous draft funding slate. Note what it does well and what it misses.
 3. Read the critiques of the previous draft. Note the specific suggestions and concerns that group members raised, and any new points of agreement or disagreement.
-4. Decide how the revised slates should differ from each other: on the points of disagreement or, if members mostly agree, on other choices that matter.
-5. Using the opinions, the previous draft, and the critiques, write {num_statements} revised funding slates. Check that every amount is $0 or at least the proposal's minimum and that each total is at most {pool}. If a slate leaves money unallocated, make sure there is a specific reason for it; otherwise use the rest of the fund. Refer to opinion and critique numbers in your reasoning, but not in the slates themselves.
+4. Plan the {num_statements} slates using the guidance above: list the agreed points, the sides of each disagreement with their supporters, and a one-line plan for each slate. Check that the plans are distinct.
+5. Using the opinions, the previous draft, and the critiques, write {num_statements} revised funding slates. Check that every amount is $0 or at least the proposal's minimum and that each total is at most {pool}. If a slate leaves money unallocated, make sure there is a specific reason for it; otherwise use the rest of the fund. Check that there are exactly {num_statements} slates. Refer to opinion and critique numbers in your reasoning, but not in the slates themselves.
 
 {_FORMAT.format(num_statements=num_statements)}
 
@@ -187,17 +207,19 @@ You are helping a group of people at Edge City decide how to split a community f
 
 {funding.fund_description(funding_pool)}
 
-Each person in the group shared their opinion. Your job is to generate {num_statements} draft funding slates that capture what they agree on. A funding slate says how much money each proposal gets and why. The group will choose one of these slates, so make them real alternatives that differ clearly from each other. Every slate must match the points that all group members agree on. Where members disagree, the slates should take different sides. If members mostly agree, the slates should instead differ on other choices that matter, such as whether to fully fund a few projects or fund more projects at smaller amounts, and which borderline proposals to include.
+Each person in the group shared their opinion. Your job is to generate {num_statements} draft funding slates that capture what they agree on. A funding slate says how much money each proposal gets and why. The group will vote on these slates, so make them real alternatives that differ clearly from each other.
 
 Base the slates on what the group members said. Use proposal details, such as cost and how realistic a project is, only to settle choices that the opinions leave open, and never claim support that no one expressed.
 
 {_RULES.format(pool=pool)}
 
+{_DIVERSITY.format(num_statements=num_statements, min_shift=_min_shift(funding_pool), extra="")}
+
 Please think through this task step-by-step:
 
 1. Read the individual opinions carefully. Note which proposals people support or oppose, where they agree, and where they disagree.
-2. Decide how the slates should differ from each other: on the points of disagreement or, if members mostly agree, on other choices that matter.
-3. Using your analysis, write {num_statements} draft funding slates. Check that every amount is $0 or at least the proposal's minimum and that each total is at most {pool}. If a slate leaves money unallocated, make sure there is a specific reason for it; otherwise use the rest of the fund. Refer to opinion numbers in your reasoning, but not in the slates themselves.
+2. Plan the {num_statements} slates using the guidance above: list the agreed points, the sides of each disagreement with their supporters, and a one-line plan for each slate. Check that the plans are distinct.
+3. Using your analysis, write {num_statements} draft funding slates. Check that every amount is $0 or at least the proposal's minimum and that each total is at most {pool}. If a slate leaves money unallocated, make sure there is a specific reason for it; otherwise use the rest of the fund. Check that there are exactly {num_statements} slates. Refer to opinion numbers in your reasoning, but not in the slates themselves.
 
 {_FORMAT.format(num_statements=num_statements)}
 

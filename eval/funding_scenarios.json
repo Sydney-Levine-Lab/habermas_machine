@@ -1,0 +1,443 @@
+[
+  {
+    "id": "near_consensus",
+    "tests": "Strong agreement on three proposals; slates must still differ on the open choices.",
+    "funding_pool": 4000,
+    "proposals": [
+      {"id": "P1", "title": "Beach cleanup and sorting stations", "description": "Weekly cleanup of the beach in front of The Circle, with gloves, bags, and recycling bins.", "minimum": 150, "ideal": 400},
+      {"id": "P2", "title": "Weekend trip to Gokarna", "description": "A bus, guesthouse, and guide for a weekend trip down the coast to Gokarna for about 30 people.", "minimum": 1200, "ideal": 2000},
+      {"id": "P3", "title": "Shared tool and hardware library", "description": "A shelf at The Circle with soldering irons, adapters, cables, a 3D printer, and spare chargers that anyone can borrow.", "minimum": 300, "ideal": 600},
+      {"id": "P4", "title": "Demo day prize pot", "description": "Cash prizes for the best projects shown at the final demo day.", "minimum": 500, "ideal": 1000},
+      {"id": "P5", "title": "Sunset sound bath series", "description": "A local practitioner runs sound baths on the beach three evenings a week.", "minimum": 200, "ideal": 500},
+      {"id": "P6", "title": "Community dinners with local cooks", "description": "Weekly dinners cooked by families from the village, open to all attendees.", "minimum": 600, "ideal": 1200},
+      {"id": "P7", "title": "Biohacking bloodwork kits", "description": "At-home blood test kits so attendees can track biomarkers during the event and compare results.", "minimum": 800, "ideal": 1500}
+    ],
+    "opinions": [
+      "The tool library and the community dinners are no-brainers, they help everyone. I'd skip the bloodwork kits, sharing medical data in a group setting feels off. I'd love the Gokarna trip too.",
+      "Dinners with local cooks are the best thing we could do, and the tool library is useful. Please no bloodwork kits, that's a private thing people can buy themselves. Demo day prizes would motivate people.",
+      "Fund the tool library and the dinners. The bloodwork kits are not a community project. I like the sound baths, they're cheap and relaxing.",
+      "I want the trip to Gokarna more than anything else. Also the dinners and the tool library, obviously. Not the bloodwork kits.",
+      "Tool library yes, dinners yes, bloodwork no. I don't care much about the rest, maybe a small demo day prize.",
+      "The dinners and tool library are great. Bloodwork kits are a liability. I think the beach cleanup matters a lot since we use that beach every day."
+    ],
+    "consensus": [
+      {"rule": "funded", "id": "P3"},
+      {"rule": "funded", "id": "P6"},
+      {"rule": "zero", "id": "P7"}
+    ],
+    "disagreements": [
+      "Whether to spend a large share on the Gokarna trip (strongly wanted by Person 4, liked by Person 1) versus spreading money across smaller items.",
+      "Whether to fund demo day prizes (Persons 2 and 5), sound baths (Person 3), and the beach cleanup (Person 6)."
+    ],
+    "critique_round": {
+      "previous_slate": {"summary": "Fund the trip, the tool library, the dinners, and demo day prizes.", "allocations": [
+        {"id": "P1", "amount": 0, "reason": "Only one person mentioned the cleanup."},
+        {"id": "P2", "amount": 1700, "reason": "The trip is the most wanted large item."},
+        {"id": "P3", "amount": 600, "reason": "Everyone supports the tool library."},
+        {"id": "P4", "amount": 500, "reason": "Two people want demo day prizes."},
+        {"id": "P5", "amount": 0, "reason": "Only one person asked for sound baths."},
+        {"id": "P6", "amount": 1200, "reason": "Everyone supports the dinners."},
+        {"id": "P7", "amount": 0, "reason": "Everyone opposes the bloodwork kits."}
+      ]},
+      "critiques": [
+        "Good overall, but the beach cleanup should get its full $400, we all walk on that beach. I'd take that from the trip.",
+        "I'm fine with this, but honestly the beach cleanup deserves the full $400. Demo day prizes could be smaller.",
+        "Give the beach cleanup its full $400. I'd still like the sound baths but I can live without them.",
+        "Keep the trip as big as possible please. I agree the cleanup should get $400 though.",
+        "Fine with me. Add the beach cleanup at $400, that's an easy win.",
+        "Thank you for the dinners. The beach cleanup should be funded at the full $400 though, it was left out."
+      ],
+      "consensus": [
+        {"rule": "at_least", "id": "P1", "amount": 400}
+      ],
+      "disagreements": [
+        "Where to take the $400 for the cleanup from: the trip (Person 1) or demo day prizes (Person 2), while Person 4 wants the trip kept large.",
+        "Whether to add sound baths (Person 3)."
+      ]
+    }
+  },
+  {
+    "id": "polarized",
+    "tests": "Two equal camps with opposing priorities and one shared item.",
+    "funding_pool": 4000,
+    "proposals": [
+      {"id": "P1", "title": "Weekend trip to Hampi", "description": "Sleeper bus, guesthouse, and guide for a weekend at the ruins of Hampi for 25 people.", "minimum": 1500, "ideal": 2500},
+      {"id": "P2", "title": "Beach rave with a DJ", "description": "A night party on the beach with a sound system, lights, and a DJ from Mumbai.", "minimum": 800, "ideal": 1500},
+      {"id": "P3", "title": "Hackathon compute credits", "description": "GPU credits for teams building AI projects during the hackathon week.", "minimum": 600, "ideal": 1200},
+      {"id": "P4", "title": "Quadratic voting app for event decisions", "description": "Two developers build and run a quadratic voting tool for group decisions at Edge City.", "minimum": 700, "ideal": 1200},
+      {"id": "P5", "title": "Longevity reading circle", "description": "Books and printed papers for a weekly reading group on longevity research.", "minimum": 100, "ideal": 250},
+      {"id": "P6", "title": "First-aid and safety kits", "description": "First-aid kits, reef-safe sunscreen, and a defibrillator rental for the venue.", "minimum": 150, "ideal": 300}
+    ],
+    "opinions": [
+      "Hampi is the trip of a lifetime and the rave would bond everyone. We already spend all day on laptops. Safety kits are a must.",
+      "I came for adventure. Fund the Hampi trip and the beach party. The hackathon stuff is for people who could pay themselves. And yes to first-aid kits.",
+      "Trip and rave, please. Those are what people will remember. Also we need first-aid kits, someone cut their foot on coral last week.",
+      "Hampi for sure. A rave is fine too. Compute credits feel like subsidizing startups. Safety kits obviously.",
+      "We're here to build. Compute credits and the voting app produce things that last beyond the event. The rave is a waste of money. Safety kits yes.",
+      "Fund the hackathon credits and the quadratic voting experiment. A trip for 25 people out of 150 isn't fair use of a community fund. Safety kits are essential.",
+      "The voting app is exactly the kind of governance experiment Edge City is about. The reading circle is cheap and great. No to the rave. First-aid kits yes.",
+      "Compute credits, voting app, reading circle. Skip the party and the trip. Safety kits, of course."
+    ],
+    "consensus": [
+      {"rule": "funded", "id": "P6"}
+    ],
+    "disagreements": [
+      "Persons 1-4 want the Hampi trip and the rave; Persons 5-8 want compute credits, the voting app, and the reading circle and oppose the rave and (Person 6, 8) the trip."
+    ],
+    "critique_round": {
+      "previous_slate": {"summary": "Put most of the fund into the two experiences people will remember.", "allocations": [
+        {"id": "P1", "amount": 2500, "reason": "Half the group wants the trip."},
+        {"id": "P2", "amount": 1200, "reason": "Half the group wants the rave."},
+        {"id": "P3", "amount": 0, "reason": "Not enough left after the trip and rave."},
+        {"id": "P4", "amount": 0, "reason": "Not enough left after the trip and rave."},
+        {"id": "P5", "amount": 0, "reason": "Not enough left after the trip and rave."},
+        {"id": "P6", "amount": 300, "reason": "Everyone wants safety kits."}
+      ]},
+      "critiques": [
+        "Love it. Maybe trim the rave a bit if the builders need something.",
+        "This is great as is.",
+        "Good, but it's unfair to give the other half nothing. Cut the trip toward its minimum and fund one builder project.",
+        "Fine by me.",
+        "This ignores half the group completely. The rave gets money and the voting app gets nothing?",
+        "Totally one-sided. A trip for 25 people takes most of the fund. Fund the compute credits at least.",
+        "This is the opposite of what I asked for. The voting app and reading circle should be in.",
+        "Drop the rave and fund the credits and the voting app."
+      ],
+      "consensus": [],
+      "disagreements": [
+        "Persons 1, 2, 4 are happy with the trip-and-rave slate; Persons 5-8 want builder projects funded instead of the rave; Person 3 wants a compromise that funds the trip at its minimum plus one builder project."
+      ]
+    }
+  },
+  {
+    "id": "tight_budget",
+    "tests": "Small pool with high minimums, so only two or three proposals can be funded and the arithmetic is tight.",
+    "funding_pool": 2500,
+    "proposals": [
+      {"id": "P1", "title": "Heritage trip to the Old Goa churches and forts", "description": "A day trip with a historian guide and a chartered bus.", "minimum": 1400, "ideal": 2000},
+      {"id": "P2", "title": "External monitors for The Circle", "description": "Rent ten external monitors for the coworking space for the whole event.", "minimum": 900, "ideal": 1600},
+      {"id": "P3", "title": "Kids' program for attending families", "description": "Two local teachers run a morning program so parents can cowork.", "minimum": 700, "ideal": 1000},
+      {"id": "P4", "title": "Open-source hardware workshop", "description": "Kits and an instructor for a three-day workshop on building sensors.", "minimum": 1000, "ideal": 1500},
+      {"id": "P5", "title": "Mobile coffee cart", "description": "A barista with a cart that moves between venues.", "minimum": 1200, "ideal": 1800},
+      {"id": "P6", "title": "Silent meditation day", "description": "A day-long guided silent retreat at a nearby ashram.", "minimum": 800, "ideal": 1200}
+    ],
+    "opinions": [
+      "The kids' program has to happen, otherwise the parents can't participate at all. The coffee cart is silly when there are three cafes on the beach. I'd like the monitors.",
+      "Kids' program first. Then the hardware workshop. Not the coffee cart.",
+      "Please fund the kids' program. The heritage trip would be amazing. The coffee cart is pointless.",
+      "Kids' program, definitely. A meditation day would balance all the work. No coffee cart, we have cafes.",
+      "Monitors would make the coworking space usable. Kids' program is important too. Coffee cart, no.",
+      "The heritage trip is the only chance to see real Goan history. Also the kids' program. Skip the coffee cart."
+    ],
+    "consensus": [
+      {"rule": "funded", "id": "P3"},
+      {"rule": "zero", "id": "P5"}
+    ],
+    "disagreements": [
+      "Which of the remaining proposals to fund alongside the kids' program: monitors (Persons 1, 5), hardware workshop (Person 2), heritage trip (Persons 3, 6), or meditation day (Person 4). The pool fits at most one or two of these."
+    ],
+    "critique_round": {
+      "previous_slate": {"summary": "Fund the kids' program and the heritage trip.", "allocations": [
+        {"id": "P1", "amount": 1800, "reason": "Two people want the heritage trip."},
+        {"id": "P2", "amount": 0, "reason": "Doesn't fit after the trip."},
+        {"id": "P3", "amount": 700, "reason": "Everyone wants the kids' program."},
+        {"id": "P4", "amount": 0, "reason": "Doesn't fit after the trip."},
+        {"id": "P5", "amount": 0, "reason": "Everyone opposes the coffee cart."},
+        {"id": "P6", "amount": 0, "reason": "Doesn't fit after the trip."}
+      ]},
+      "critiques": [
+        "The kids' program at its minimum only covers one teacher. It needs the full $1,000. I'd rather have monitors than the trip.",
+        "Kids' program needs its full $1,000. The trip is fine but the workshop would be better.",
+        "Great, but give the kids' program its full $1,000 and the trip the rest.",
+        "Kids' program should get its full $1,000. I still think the meditation day is a better use than the trip.",
+        "The kids' program should get the full $1,000, and the rest should go to the monitors.",
+        "Good. Give the kids' program the full $1,000 and keep the trip."
+      ],
+      "consensus": [
+        {"rule": "at_least", "id": "P3", "amount": 1000}
+      ],
+      "disagreements": [
+        "With $1,500 left after the kids' program, whether it goes to the heritage trip (Persons 3, 6), monitors (Persons 1, 5), the workshop (Person 2), or the meditation day (Person 4)."
+      ]
+    }
+  },
+  {
+    "id": "ideals_below_pool",
+    "tests": "Eight cheap proposals whose ideals add up to less than the pool, so using the whole fund means going above some ideals.",
+    "funding_pool": 4000,
+    "proposals": [
+      {"id": "P1", "title": "Hammock zone", "description": "Hammocks and shade cloth between the palms behind The Circle.", "minimum": 100, "ideal": 300},
+      {"id": "P2", "title": "Language exchange evenings", "description": "Snacks and printed materials for weekly Hindi, Konkani, and English exchange.", "minimum": 50, "ideal": 150},
+      {"id": "P3", "title": "Night snorkeling with a guide", "description": "Guided night snorkeling trips with gear rental, about 10 people per trip.", "minimum": 400, "ideal": 800},
+      {"id": "P4", "title": "Edge City zine", "description": "Printing a zine of attendee essays and art at the end of the event.", "minimum": 150, "ideal": 400},
+      {"id": "P5", "title": "Board game library", "description": "A shelf of board games at The Circle.", "minimum": 100, "ideal": 250},
+      {"id": "P6", "title": "Surf lessons subsidy", "description": "Subsidized group surf lessons with a local school; more money means more spots.", "minimum": 500, "ideal": 900},
+      {"id": "P7", "title": "Local artisan market", "description": "Stall fees and promotion for a market where village artisans sell to attendees.", "minimum": 200, "ideal": 500},
+      {"id": "P8", "title": "Podcast studio corner", "description": "Mics and acoustic panels for a small recording corner.", "minimum": 150, "ideal": 300}
+    ],
+    "opinions": [
+      "Board games and language exchange are cheap and bring people together. Surf lessons should get extra money so more people can join.",
+      "I'd fund almost everything at a modest level. Board games and the language exchange for sure.",
+      "Board games, language exchange, and the artisan market. The podcast corner seems like a vanity project.",
+      "Night snorkeling! And put extra into it so there are more trips. Board games and language exchange are good too.",
+      "Fund every proposal. The board game library and language exchange are my favorites.",
+      "Surf lessons and snorkeling are why we're on the coast. Board games and language exchange are fine. The zine is nice.",
+      "Board games, language exchange, and the zine. I'd skip the podcast corner."
+    ],
+    "consensus": [
+      {"rule": "funded", "id": "P2"},
+      {"rule": "funded", "id": "P5"}
+    ],
+    "disagreements": [
+      "Whether to fund every proposal (Persons 2, 5) or skip the podcast corner (Persons 3, 7).",
+      "Whether the money beyond the ideals goes to surf lessons (Persons 1, 6) or night snorkeling (Persons 4, 6), or is kept unallocated."
+    ],
+    "critique_round": {
+      "previous_slate": {"summary": "Fund every proposal at its ideal amount; $400 is left over because every proposal is at its ideal.", "allocations": [
+        {"id": "P1", "amount": 300, "reason": "Ideal amount."},
+        {"id": "P2", "amount": 150, "reason": "Ideal amount; everyone wants it."},
+        {"id": "P3", "amount": 800, "reason": "Ideal amount."},
+        {"id": "P4", "amount": 400, "reason": "Ideal amount."},
+        {"id": "P5", "amount": 250, "reason": "Ideal amount; everyone wants it."},
+        {"id": "P6", "amount": 900, "reason": "Ideal amount."},
+        {"id": "P7", "amount": 500, "reason": "Ideal amount."},
+        {"id": "P8", "amount": 300, "reason": "Ideal amount."}
+      ]},
+      "critiques": [
+        "Put the leftover $400 into surf lessons so more people get spots.",
+        "Looks good to me.",
+        "Drop the podcast corner and give that money to the artisan market.",
+        "The leftover should go to more snorkeling trips.",
+        "Great, everything is funded.",
+        "Split the leftover between surfing and snorkeling.",
+        "Drop the podcast corner. Otherwise fine."
+      ],
+      "consensus": [],
+      "disagreements": [
+        "Where the leftover $400 goes: surf lessons (Person 1), snorkeling (Person 4), split (Person 6).",
+        "Whether to drop the podcast corner (Persons 3, 7) or keep everything (Persons 2, 5)."
+      ]
+    }
+  },
+  {
+    "id": "reserve_request",
+    "tests": "Everyone asks to keep $600 back for ideas that come up later, so slates must leave exactly that reserve, not more.",
+    "funding_pool": 4000,
+    "proposals": [
+      {"id": "P1", "title": "Travel for a fireside speaker", "description": "Flights and lodging for a well-known researcher to give a fireside talk.", "minimum": 800, "ideal": 1200},
+      {"id": "P2", "title": "Crypto wallet onboarding clinic", "description": "Volunteers help locals and newcomers set up wallets safely; covers printed guides and hardware wallets for demos.", "minimum": 200, "ideal": 400},
+      {"id": "P3", "title": "Group trip to Dudhsagar Falls", "description": "Jeeps and a guide for a day trip to the falls for 30 people.", "minimum": 1000, "ideal": 1600},
+      {"id": "P4", "title": "Shade structures at The Circle", "description": "Bamboo and cloth shade structures over the outdoor coworking area.", "minimum": 600, "ideal": 1000},
+      {"id": "P5", "title": "AI art installation", "description": "A generative art installation projected on the beach wall at night.", "minimum": 700, "ideal": 1300},
+      {"id": "P6", "title": "Morning run club gear", "description": "Headlamps, water stations, and shirts for a morning run club.", "minimum": 100, "ideal": 300},
+      {"id": "P7", "title": "Translation for locals' Q&A", "description": "Interpreters for a session where villagers ask attendees questions and vice versa.", "minimum": 300, "ideal": 500}
+    ],
+    "opinions": [
+      "Let's keep $600 aside for ideas that come up in week two. The shade structures are urgent, it's too hot to work outside. I'd love the fireside speaker.",
+      "Keep $600 back for later ideas, I agree with what others said. Shade, please. And the Dudhsagar trip.",
+      "Shade structures and the translation session. Hold back $600 for new proposals in the second week.",
+      "Hold $600 in reserve. Fund the shade. The AI art installation would be a highlight.",
+      "Shade first, it's 35 degrees. Keep $600 for week two. The run club is cheap and healthy.",
+      "Reserve $600 for later. Shade structures. The wallet clinic would help locals.",
+      "Shade structures for sure, and keep $600 back. I want the Dudhsagar trip."
+    ],
+    "consensus": [
+      {"rule": "reserve", "amount": 600},
+      {"rule": "funded", "id": "P4"}
+    ],
+    "disagreements": [
+      "Which projects to fund with the remaining $3,400 after shade: fireside speaker (Person 1), Dudhsagar trip (Persons 2, 7), translation (Person 3), AI art (Person 4), run club (Person 5), wallet clinic (Person 6)."
+    ],
+    "critique_round": {
+      "previous_slate": {"summary": "Fund shade, the trip, the speaker, and the run club, keeping $600 for week two.", "allocations": [
+        {"id": "P1", "amount": 1200, "reason": "A speaker benefits everyone."},
+        {"id": "P2", "amount": 0, "reason": "Only one person mentioned it."},
+        {"id": "P3", "amount": 1000, "reason": "Two people want the trip."},
+        {"id": "P4", "amount": 1000, "reason": "Everyone wants shade."},
+        {"id": "P5", "amount": 0, "reason": "Only one person mentioned it."},
+        {"id": "P6", "amount": 200, "reason": "Cheap and healthy."},
+        {"id": "P7", "amount": 0, "reason": "Only one person mentioned it."}
+      ]},
+      "critiques": [
+        "Good, the speaker and shade are in.",
+        "Fine, though the trip at its minimum means a worse guide.",
+        "The translation session is the only thing that connects us to the village. It should be in, even if the speaker gets less.",
+        "Nothing for the art installation? I'd cut the speaker to its minimum to fund it.",
+        "Good, the run club is in.",
+        "Please add the wallet clinic, it's only $200.",
+        "Fine with me."
+      ],
+      "consensus": [],
+      "disagreements": [
+        "Whether to cut the speaker to fund translation (Person 3), AI art (Person 4), or the wallet clinic (Person 6), versus keeping it (Persons 1, 2, 5, 7 are content)."
+      ]
+    }
+  },
+  {
+    "id": "expensive_divisive",
+    "tests": "One expensive proposal that would take most of the fund, which half the group loves and half rejects, plus one proposal everyone opposes.",
+    "funding_pool": 4000,
+    "proposals": [
+      {"id": "P1", "title": "Catamaran day for everyone", "description": "Charter two catamarans for a full day at sea with lunch, for up to 80 people.", "minimum": 3000, "ideal": 3800},
+      {"id": "P2", "title": "Backup power for The Circle", "description": "Battery packs and an inverter so coworking continues during power cuts.", "minimum": 500, "ideal": 900},
+      {"id": "P3", "title": "Consciousness salon", "description": "Weekly evening salons with invited speakers on consciousness research.", "minimum": 150, "ideal": 400},
+      {"id": "P4", "title": "Founder office-hours lunches", "description": "Lunches where experienced founders meet with first-time builders.", "minimum": 400, "ideal": 800},
+      {"id": "P5", "title": "Event points token", "description": "A crypto token that attendees earn for contributions and spend at vendors.", "minimum": 600, "ideal": 1000},
+      {"id": "P6", "title": "Beach volleyball net and lights", "description": "A net, balls, and lights for evening games.", "minimum": 200, "ideal": 500}
+    ],
+    "opinions": [
+      "The catamaran day would be the highlight of the whole event, 80 people at sea together. Backup power is essential, we lose hours every power cut. The token idea is gimmicky.",
+      "Catamaran! It's the one thing that includes almost everyone at once. Backup power too. No token, please.",
+      "Spending most of the fund on one day is a bad idea. Fund backup power, the salon, and volleyball. The token is a distraction.",
+      "Backup power is the most important. Office-hours lunches help new builders. A catamaran day is a luxury. No token.",
+      "Catamaran day for sure, and backup power. The token would create weird incentives.",
+      "Backup power and lots of small things, not one big boat trip. The token is a bad idea.",
+      "I'd love the catamaran. Backup power is needed. Skip the token."
+    ],
+    "consensus": [
+      {"rule": "funded", "id": "P2"},
+      {"rule": "zero", "id": "P5"}
+    ],
+    "disagreements": [
+      "Persons 1, 2, 5, 7 want the catamaran day, which takes most of the fund; Persons 3, 4, 6 want many small projects (salon, volleyball, lunches) instead."
+    ],
+    "critique_round": {
+      "previous_slate": {"summary": "Fund the catamaran day and backup power, which most people want.", "allocations": [
+        {"id": "P1", "amount": 3000, "reason": "Four of seven people want the catamaran."},
+        {"id": "P2", "amount": 500, "reason": "Everyone wants backup power."},
+        {"id": "P3", "amount": 0, "reason": "Not enough left."},
+        {"id": "P4", "amount": 0, "reason": "Not enough left."},
+        {"id": "P5", "amount": 0, "reason": "Everyone opposes the token."},
+        {"id": "P6", "amount": 500, "reason": "Fits in what is left."}
+      ]},
+      "critiques": [
+        "Perfect.",
+        "Good. Backup power at its minimum might not be enough, though.",
+        "Three of us get almost nothing. At least fund the salon instead of the volleyball.",
+        "This spends three quarters of the fund on one day. I'd rather have backup power at its ideal and the lunches.",
+        "Great slate.",
+        "Still a bad idea to put $3,000 into one boat day.",
+        "Love it."
+      ],
+      "consensus": [],
+      "disagreements": [
+        "Persons 1, 2, 5, 7 are happy with the catamaran; Persons 3, 4, 6 want the money spread across backup power, the salon, and lunches instead."
+      ]
+    }
+  },
+  {
+    "id": "large_group",
+    "tests": "Twelve participants with overlapping, mixed preferences and a larger pool.",
+    "funding_pool": 5000,
+    "proposals": [
+      {"id": "P1", "title": "Demo day production", "description": "Sound, projection, and livestream for the final demo day.", "minimum": 700, "ideal": 1200},
+      {"id": "P2", "title": "Longevity supplement group buy", "description": "Bulk purchase of supplements so attendees can follow a shared protocol.", "minimum": 500, "ideal": 1000},
+      {"id": "P3", "title": "Village school workshop", "description": "Attendees run a week of science workshops at the village school, with materials.", "minimum": 400, "ideal": 900},
+      {"id": "P4", "title": "Weekend in Hampi", "description": "Sleeper bus and guesthouse for 25 people.", "minimum": 1800, "ideal": 2600},
+      {"id": "P5", "title": "DAO governance simulation game", "description": "A role-playing game where teams govern a simulated city treasury.", "minimum": 300, "ideal": 600},
+      {"id": "P6", "title": "Daily ice baths", "description": "Ice deliveries and tubs for morning cold plunges.", "minimum": 600, "ideal": 1100},
+      {"id": "P7", "title": "Recording fireside talks", "description": "Camera operator and editing so talks can be shared after the event.", "minimum": 400, "ideal": 700}
+    ],
+    "opinions": [
+      "Demo day production, the school workshop, and Hampi. Supplements are a health liability, no.",
+      "Demo day needs good production. Ice baths every morning would be amazing. Not the supplements.",
+      "School workshop and recording talks. Demo day too. Supplement group buy is a bad idea.",
+      "Hampi! And demo day production. No supplements.",
+      "Demo day, governance game, recording talks. Skip supplements.",
+      "Ice baths and demo day. Hampi is too expensive for 25 people. No supplements.",
+      "The village school workshop is the most meaningful thing here. Demo day production is fine. No supplements.",
+      "Demo day production and Hampi. Group-buying supplements is risky.",
+      "Recording talks so others can learn. Demo day. Definitely not supplements.",
+      "Governance game and demo day production. No supplement buy.",
+      "Ice baths, demo day, Hampi. No to supplements.",
+      "School workshop, demo day. Don't fund the supplements."
+    ],
+    "consensus": [
+      {"rule": "funded", "id": "P1"},
+      {"rule": "zero", "id": "P2"}
+    ],
+    "disagreements": [
+      "Hampi (Persons 1, 4, 8, 11 for; Person 6 against) versus several smaller items.",
+      "Support for school workshop (Persons 1, 3, 7, 12), ice baths (Persons 2, 6, 11), recording talks (Persons 3, 5, 9), and governance game (Persons 5, 10)."
+    ],
+    "critique_round": {
+      "previous_slate": {"summary": "Fund demo day, the school workshop, Hampi at its minimum, ice baths, and recording.", "allocations": [
+        {"id": "P1", "amount": 1200, "reason": "Everyone wants it."},
+        {"id": "P2", "amount": 0, "reason": "Everyone opposes it."},
+        {"id": "P3", "amount": 900, "reason": "Four people want it."},
+        {"id": "P4", "amount": 1800, "reason": "Four people want it."},
+        {"id": "P5", "amount": 0, "reason": "Only two people want it."},
+        {"id": "P6", "amount": 600, "reason": "Three people want it."},
+        {"id": "P7", "amount": 500, "reason": "Three people want it."}
+      ]},
+      "critiques": [
+        "Great.",
+        "Ice baths at the minimum means only three days a week. Could they get more?",
+        "Good. Recording should get its full $700.",
+        "Hampi at its minimum is fine.",
+        "No governance game at all? It's only $300.",
+        "Hampi is still too much money for 25 people.",
+        "Good, the school workshop is fully funded.",
+        "Fine.",
+        "Recording should get its full $700.",
+        "Please fund the governance game; take it from Hampi.",
+        "Good.",
+        "Happy with this."
+      ],
+      "consensus": [],
+      "disagreements": [
+        "Whether to fund the governance game (Persons 5, 10) and raise recording (Persons 3, 9) and ice baths (Person 2), taking money from Hampi (Persons 6, 10) or not (Person 4 is content)."
+      ]
+    }
+  },
+  {
+    "id": "values_not_projects",
+    "tests": "Opinions talk mostly about values rather than proposals; only two points are shared explicitly.",
+    "funding_pool": 4000,
+    "proposals": [
+      {"id": "P1", "title": "Full moon party", "description": "A big party on the beach with a sound system and fire dancers.", "minimum": 800, "ideal": 1500},
+      {"id": "P2", "title": "Newcomer buddy program", "description": "Pairs first-time attendees with returning ones; covers welcome kits.", "minimum": 100, "ideal": 300},
+      {"id": "P3", "title": "Quiet room at The Circle", "description": "Soundproofing, cushions, and a small library for a quiet room.", "minimum": 400, "ideal": 800},
+      {"id": "P4", "title": "Coding workshop at the local school", "description": "Laptops and a two-week coding course for village teenagers.", "minimum": 600, "ideal": 1000},
+      {"id": "P5", "title": "Konkani language lessons", "description": "A local teacher gives weekly Konkani lessons to attendees.", "minimum": 200, "ideal": 400},
+      {"id": "P6", "title": "Boat tour with local fishermen", "description": "Hire fishing boats and their crews for morning tours.", "minimum": 900, "ideal": 1500}
+    ],
+    "opinions": [
+      "I care about newcomers not feeling left out. Whatever we pick, the coding workshop for local kids should happen. We've had enough parties.",
+      "Introverts need somewhere to recharge. The local coding workshop is a must. No more parties, please.",
+      "We should give back to the village that hosts us; the coding workshop is the obvious choice. I'm tired of parties.",
+      "Things that connect us with Goan culture matter most to me. Definitely the coding workshop. Skip the party, we have one every week.",
+      "I want money to reach people who don't usually benefit from events like this. The coding workshop. No party.",
+      "Quiet, thoughtful activities, not more noise. The coding workshop at the school, for sure. Not another party."
+    ],
+    "consensus": [
+      {"rule": "funded", "id": "P4"},
+      {"rule": "zero", "id": "P1"}
+    ],
+    "disagreements": [
+      "How to translate values into the other proposals: newcomer inclusion (Person 1, buddy program), introverts and quiet (Persons 2, 6, quiet room), Goan culture and locals (Persons 3, 4, 5: Konkani lessons, boat tour)."
+    ],
+    "critique_round": {
+      "previous_slate": {"summary": "Fund every proposal except the party.", "allocations": [
+        {"id": "P1", "amount": 0, "reason": "Everyone is tired of parties."},
+        {"id": "P2", "amount": 300, "reason": "Helps newcomers."},
+        {"id": "P3", "amount": 800, "reason": "Gives introverts space."},
+        {"id": "P4", "amount": 1000, "reason": "Everyone wants it."},
+        {"id": "P5", "amount": 400, "reason": "Connects us with Goan culture."},
+        {"id": "P6", "amount": 1500, "reason": "Connects us with locals."}
+      ]},
+      "critiques": [
+        "Good, the buddy program is in.",
+        "Good, the quiet room is in. The boat tour feels like tourism though.",
+        "The boat tour mostly entertains us; I'd move that money to the coding workshop so more kids can join.",
+        "Love the boat tour and the Konkani lessons.",
+        "The boat tour pays local fishermen, which is good. Fine with this.",
+        "The boat tour is touristy. Put more into the quiet room."
+      ],
+      "consensus": [],
+      "disagreements": [
+        "Whether to keep the boat tour (Persons 4, 5) or move its money to the coding workshop (Person 3) or the quiet room (Persons 2, 6)."
+      ]
+    }
+  }
+]

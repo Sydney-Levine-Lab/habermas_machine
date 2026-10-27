@@ -46,7 +46,8 @@ class FundingSlateModelTest(absltest.TestCase):
     for text in ['How should we split the fund?', 'Fund the trip.',
                  'Fund cleanup.', 'Proposal P1: Beach cleanup',
                  'Minimum: $600', 'Ideal: $900', 'generate 3 draft funding',
-                 'at most $2,500', 'fund of $2,500']:
+                 'at most $2,500', 'fund of $2,500', 'move at least $250',
+                 'Always write exactly 3 slates']:
       self.assertIn(text, prompt)
 
   def test_opinion_critique_prompt(self):
@@ -55,7 +56,8 @@ class FundingSlateModelTest(absltest.TestCase):
         PROPOSALS, 4000, context='Context.')
     for text in ['Previous slate.', 'Critique Person 1: Critique.',
                  'Context About the Participants: Context.',
-                 'generate 2 revised funding slates', 'at most $4,000']:
+                 'generate 2 revised funding slates', 'at most $4,000',
+                 'move at least $400', 'stays close to it']:
       self.assertIn(text, prompt)
 
   def test_generate_statements_drops_invalid_slates(self):
