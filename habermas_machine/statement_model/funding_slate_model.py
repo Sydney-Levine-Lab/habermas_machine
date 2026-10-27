@@ -463,6 +463,19 @@ class FundingSlateModel(base_model.BaseStatementModel):
     self._proposals = list(proposals)
     self._funding_pool = funding_pool
     self._oversample = oversample
+    self._slates = {}  # Rendered slate -> FundingSlate.
+
+  @property
+  def proposals(self) -> list[funding.Proposal]:
+    return list(self._proposals)
+
+  @property
+  def funding_pool(self) -> int:
+    return self._funding_pool
+
+  def slate_for(self, statement: str) -> funding.FundingSlate | None:
+    """Returns the slate behind a statement this model generated, or None."""
+    return self._slates.get(statement)
 
   def generate_statement(
       self,
@@ -579,11 +592,11 @@ class FundingSlateModel(base_model.BaseStatementModel):
       )
     selected = _pad(
         selected, num_statements, self._proposals, self._funding_pool)
-    return [
-        base_model.StatementResult(
-            funding.render_slate(
-                candidate.slate, self._proposals, self._funding_pool),
-            candidate.explanation,
-        )
-        for candidate in selected
-    ]
+    results = []
+    for candidate in selected:
+      statement = funding.render_slate(
+          candidate.slate, self._proposals, self._funding_pool)
+      self._slates[statement] = candidate.slate
+      results.append(
+          base_model.StatementResult(statement, candidate.explanation))
+    return results

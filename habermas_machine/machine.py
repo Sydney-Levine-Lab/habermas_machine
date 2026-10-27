@@ -23,8 +23,34 @@ from habermas_machine import types
 from habermas_machine import utils
 from habermas_machine.llm_client import base_client
 from habermas_machine.reward_model import base_model as base_reward_model
+from habermas_machine.reward_model import funding_ranking_model
 from habermas_machine.social_choice import base_method as base_social_choice
 from habermas_machine.statement_model import base_model as base_statement_model
+from habermas_machine.statement_model import funding_slate_model
+
+
+def _check_funding_models(
+    statement_model: base_statement_model.BaseStatementModel,
+    reward_model: base_reward_model.BaseRankingModel,
+) -> None:
+  """Checks that funding statement and ranking models are used together."""
+  funding_statements = isinstance(
+      statement_model, funding_slate_model.FundingSlateModel)
+  funding_rankings = isinstance(
+      reward_model, funding_ranking_model.FundingRankingModel)
+  if funding_statements != funding_rankings:
+    raise ValueError(
+        'FundingSlateModel and FundingRankingModel must be used together. Use'
+        ' funding_machine.make_machine to create both.'
+    )
+  if funding_statements and (
+      statement_model.proposals != reward_model.proposals
+      or statement_model.funding_pool != reward_model.funding_pool
+  ):
+    raise ValueError(
+        'The funding statement and ranking models must use the same proposals'
+        ' and funding pool.'
+    )
 
 
 class HabermasMachine:
@@ -119,6 +145,15 @@ class HabermasMachine:
         statement_context, 'statement_context')
     self._ranking_context = self._validate_context(
         ranking_context, 'ranking_context')
+    _check_funding_models(statement_model, reward_model)
+
+  @property
+  def statement_model(self) -> base_statement_model.BaseStatementModel:
+    return self._statement_model
+
+  @property
+  def reward_model(self) -> base_reward_model.BaseRankingModel:
+    return self._reward_model
 
   def _validate_context(
       self,

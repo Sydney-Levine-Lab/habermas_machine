@@ -65,6 +65,57 @@ Machine and the fine-tuned Habermas Machine in the paper:
  rather than a score like is done in the paper. However, more reward models
  can be added to `habermas_machine/reward_model/`.
 
+## Funding allocation
+
+`funding_machine.make_machine` creates a Habermas Machine whose candidate
+statements are funding slates: how much of a fixed pool each proposal gets,
+and why. Each amount is either $0 or at least the proposal's minimum, and the
+total stays within the pool. It uses `FundingSlateModel` and
+`FundingRankingModel` together, which `HabermasMachine` requires.
+
+To switch from the diverse chain-of-thought model, replace
+
+```python
+hm = machine.HabermasMachine(
+    question=QUESTION,
+    statement_client=client,
+    reward_client=client,
+    statement_model=types.StatementModel.DIVERSE_CHAIN_OF_THOUGHT.get_model(),
+    reward_model=types.RewardModel.CHAIN_OF_THOUGHT_RANKING.get_model(),
+    social_choice_method=types.RankAggregation.SCHULZE.get_method(
+        types.TieBreakingMethod.TBRC),
+    num_candidates=16,
+    num_citizens=NUM_CITIZENS,
+)
+```
+
+with
+
+```python
+from habermas_machine import funding
+from habermas_machine import funding_machine
+
+proposals = [
+    funding.Proposal('P1', 'Beach cleanup', 'Weekly cleanup.', 100, 300),
+    funding.Proposal('P2', 'Hampi trip', 'Weekend trip.', 600, 900),
+]
+hm = funding_machine.make_machine(
+    proposals,
+    statement_client=client,
+    reward_client=client,
+    num_citizens=NUM_CITIZENS,
+    funding_pool=4000,
+)
+```
+
+`mediate` works as before and returns the slates as text. To get the
+amounts, use `hm.statement_model.slate_for(winner)`, which returns a
+`funding.FundingSlate`. The question defaults to
+`funding.default_question(funding_pool)`, and other `HabermasMachine`
+arguments such as `seed`, `verbose` and `statement_context` are passed
+through. It generates 8 slates per round by default, the number the prompts
+were tuned for; see `eval/README.md`.
+
 # License and disclaimer
 
 Copyright 2024 DeepMind Technologies Limited

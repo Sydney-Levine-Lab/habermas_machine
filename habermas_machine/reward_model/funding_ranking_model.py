@@ -170,6 +170,14 @@ class FundingRankingModel(cot_ranking_model.COTRankingModel):
     self._proposals = list(proposals)
     self._funding_pool = funding_pool
 
+  @property
+  def proposals(self) -> list[funding.Proposal]:
+    return list(self._proposals)
+
+  @property
+  def funding_pool(self) -> int:
+    return self._funding_pool
+
   @override
   def _generate_prompt(
       self,
